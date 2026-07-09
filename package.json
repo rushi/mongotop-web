@@ -24,7 +24,8 @@
         "lint": "turbo lint",
         "clean": "turbo clean && rm -rf node_modules",
         "generate-web-config": "node scripts/generate-web-config.js",
-        "docker:build": "bash scripts/docker-build.sh"
+        "docker:build": "bash scripts/docker-build.sh",
+        "cleanup": "bash scripts/cleanup.sh"
     },
     "keywords": [
         "mongo",
