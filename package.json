@@ -15,8 +15,8 @@
     ],
     "scripts": {
         "build": "NODE_ENV=production node scripts/generate-web-config.js && turbo build --force",
-        "dev": "turbo dev --filter=@mongo-query-top/web --filter=@mongo-query-top/api",
-        "dev:api": "turbo dev --filter=@mongo-query-top/api",
+        "dev": "node scripts/generate-web-config.js && turbo dev --filter=@mongo-query-top/web --filter=@mongo-query-top/api",
+        "dev:api": "node scripts/generate-web-config.js && turbo dev --filter=@mongo-query-top/api",
         "start": "concurrently \"pnpm start:api\" \"pnpm start:web\"",
         "start:api": "pnpm --filter=@mongo-query-top/api start",
         "start:web": "pnpm --filter=@mongo-query-top/web start",
