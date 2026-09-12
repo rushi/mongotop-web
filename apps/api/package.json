@@ -16,7 +16,7 @@
         "config": "^4.4.2",
         "dayjs": "^1.11.21",
         "evlog": "^2.20.0",
-        "fastify": "^5.10.0",
+        "fastify": "^5.12.1",
         "geoip-lite": "^1.4.10",
         "humanize-duration": "^3.34.0",
         "js-yaml": "^4.3.0",
