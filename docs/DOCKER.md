@@ -1,10 +1,10 @@
 # Docker Deployment
 
-This guide covers running MongoDB Query Top in Docker containers for both development and production environments.
+This guide covers running MongoTop in Docker containers, for both development and production.
 
 ## Quick Start
 
-The application includes a complete Docker setup for running both API and Web services in containers.
+Docker Compose runs both the API and Web services as containers.
 
 **Prerequisites:**
 
@@ -62,9 +62,8 @@ docker compose down
 
 - The `scripts/generate-web-config.js` reads all settings from `config/local.yaml`
 - It generates `apps/web/src/config.ts` with the API URL and API key
-- The web frontend is built with this generated config (no environment variables!)
-- The API reads all configuration from mounted `config/` directory at runtime
-- No separate `.env` file needed!
+- The web frontend is built with this generated config
+- The API reads all configuration from the mounted `config/` directory at runtime
 
 ## Docker Architecture
 
@@ -112,7 +111,7 @@ docker build -t mongotop-web-web -f apps/web/Dockerfile \
 - CORS settings
 - All API runtime configuration
 
-**No Environment Variables Needed!**
+**No environment variables**
 
 The system uses a build-time script (`scripts/generate-web-config.js`) that:
 
@@ -288,14 +287,14 @@ chmod 777 logs  # Or use specific user:group
 
 **Production Checklist:**
 
-- ✅ Change default API key in `config/local.yaml`
-- ✅ Use strong, random API keys (32+ characters)
-- ✅ Configure CORS origins to match your domain
-- ✅ Use SSL/TLS for production (reverse proxy)
-- ✅ Keep Docker images updated
-- ✅ Restrict MongoDB network access
-- ✅ Review and remove unused MongoDB servers from config
-- ✅ Set appropriate log levels (`warn` or `error` for production)
+- Change the default API key in `config/local.yaml`
+- Use strong, random API keys (32+ characters)
+- Configure CORS origins to match your domain
+- Terminate SSL/TLS at the reverse proxy
+- Keep Docker images updated
+- Restrict MongoDB network access
+- Remove unused MongoDB servers from config
+- Set log level to `warn` or `error`
 
 **Reverse Proxy Example (nginx with SSE support):**
 

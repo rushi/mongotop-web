@@ -3,12 +3,12 @@
   <h1>MongoTop</h1>
 </div>
 
-Watch what your MongoDB cluster is doing right now — a `top`-style live view of `db.currentOp()`, streamed to a web dashboard via SSE, with slow and unindexed queries called out automatically.
+Watch what your MongoDB cluster is doing right now. A `top`-style live view of `db.currentOp()`, streamed to a web dashboard over SSE, with slow and unindexed queries called out automatically.
 
 ## Features
 
 - **Real-time monitoring** with auto-refresh and SSE streaming
-- **Intelligent filtering** of system/internal queries
+- **Automatic filtering** of system/internal queries
 - **Color-coded highlighting** for unindexed queries (COLLSCAN)
 - **GeoIP location display** for public IPs
 - **Auto-save** long-running and problematic queries
@@ -20,21 +20,7 @@ Watch what your MongoDB cluster is doing right now — a `top`-style live view o
 
 ## Why?
 
-The built-in `db.currentOp()` has limitations:
-
-- ❌ JSON output not easily readable
-- ❌ Cluttered with system queries
-- ❌ No auto-refresh or persistence
-- ❌ No summary statistics
-
-This tool provides:
-
-- ✅ Human-readable tabular display
-- ✅ Automatic filtering of noise
-- ✅ Auto-refresh and real-time streaming
-- ✅ Instant identification of slow queries
-- ✅ Detection of unindexed scans
-- ✅ REST API and web dashboard
+`db.currentOp()` hands you a wall of JSON, mixed in with system queries, with no refresh and nothing kept between runs. MongoTop reads the same data and renders it as a sorted table that refreshes itself, filters the noise, flags COLLSCANs, and writes the queries worth keeping to disk.
 
 ## Screenshot
 
@@ -74,7 +60,7 @@ Run them separately if needed:
 
 ```bash
 pnpm run start:api   # API only (port 7011)
-pnpm run start:web   # Web only — vite preview (port 7010)
+pnpm run start:web   # Web only, vite preview (port 7010)
 ```
 
 ## Docker Setup
@@ -96,7 +82,7 @@ docker compose up -d
 
 **Production:** `pnpm docker:build https://api.yourdomain.com`
 
-See **[docs/DOCKER.md](docs/DOCKER.md)** for complete documentation including production deployment, SSE-capable reverse proxy configuration, troubleshooting, and more.
+See [docs/DOCKER.md](docs/DOCKER.md) for production deployment, SSE-capable reverse proxy configuration, and troubleshooting.
 
 ## Usage
 
@@ -106,14 +92,14 @@ See **[docs/DOCKER.md](docs/DOCKER.md)** for complete documentation including pr
 pnpm run dev
 ```
 
-Opens **http://localhost:7000** with:
+Opens http://localhost:7000 with:
 
 - Real-time query monitoring
 - Interactive table with virtualization
 - Query details with JSON viewer
 - Server selection and connection management
-- Connected clients tab - live connections grouped by client and user, filterable by replica set node
-- Collection activity tab — per-interval or cumulative op counts by collection, plus live server uptime
+- Connected clients tab: live connections grouped by client and user, filterable by replica set node
+- Collection activity tab: per-interval or cumulative op counts by collection, plus live server uptime
 
 ### API Server
 
@@ -148,7 +134,7 @@ api:
         credentials: true
 ```
 
-**config/production.yaml** (checked into git — port/URL overrides for `NODE_ENV=production`):
+**config/production.yaml** (checked into git, port/URL overrides for `NODE_ENV=production`):
 
 ```yaml
 api:
@@ -157,7 +143,7 @@ frontend:
     url: http://localhost:7010
 ```
 
-**config/local.yaml** (gitignored - your servers):
+**config/local.yaml** (gitignored, your servers):
 
 ```yaml
 servers:
@@ -183,10 +169,8 @@ Copy `config/local.yaml.example` to get started.
 
 ```
 apps/
-├── api/      # Fastify REST API + SSE streaming
-│             # Includes MongoDB services and query processing
+├── api/      # Fastify REST API + SSE streaming, MongoDB services, query processing
 └── web/      # React dashboard (TanStack Router, Zustand, shadcn/ui)
-              # Includes utility functions for styling
 
 packages/
 └── types/    # Shared TypeScript types
@@ -233,9 +217,9 @@ pnpm run cleanup
 
 ## Documentation
 
-- **[docs/API.md](docs/API.md)** - Complete API endpoint documentation
-- **[docs/DOCKER.md](docs/DOCKER.md)** - Docker deployment guide with production setup and SSE support
-- **[CLAUDE.md](CLAUDE.md)** - AI coding context — project conventions, commands, and code style
+- [docs/API.md](docs/API.md): every API endpoint, with request and response examples
+- [docs/DOCKER.md](docs/DOCKER.md): Docker deployment, production setup, SSE support
+- [CLAUDE.md](CLAUDE.md): agent context, project conventions, commands, code style
 
 ## Query Logging
 

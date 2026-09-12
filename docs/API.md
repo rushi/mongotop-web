@@ -1,6 +1,6 @@
 # MongoTop API
 
-Complete API reference for the mongotop-web REST API server.
+API reference for the MongoTop REST server.
 
 ## Base URL
 
@@ -53,7 +53,7 @@ GET /health
 }
 ```
 
-**No authentication required.**
+No authentication required.
 
 ---
 
@@ -328,7 +328,7 @@ POST /api/queries/:serverId/kill/:opid
 }
 ```
 
-**Error Response (400):** `{ "error": "Invalid opid" }` — opid must be a positive integer.
+**Error Response (400):** `{ "error": "Invalid opid" }`. The opid must be a positive integer.
 
 **Error Response (404):** `{ "error": "Server not connected" }`
 
@@ -756,7 +756,7 @@ When using SSE streams:
 
 **Production Example:**
 
-See [apps/web/src/hooks/useServerSentEvents.ts](apps/web/src/hooks/useServerSentEvents.ts) for a production-ready React hook with:
+See [apps/web/src/hooks/useServerSentEvents.ts](apps/web/src/hooks/useServerSentEvents.ts) for the React hook this project uses. It handles:
 
 - Automatic reconnection with exponential backoff
 - Connection state management
@@ -826,5 +826,5 @@ server {
 
 ## Related Documentation
 
-- [README.md](README.md) - Quick start and overview
-- [CLAUDE.md](CLAUDE.md) - Developer guide with architecture and code patterns
+- [README.md](README.md): quick start and overview
+- [CLAUDE.md](CLAUDE.md): agent context, architecture, code patterns
