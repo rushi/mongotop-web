@@ -11,7 +11,8 @@ type SortDirection = "asc" | "desc";
 
 const GRID_COLS = "grid-cols-[minmax(200px,1.8fr)_110px_110px_110px_90px_120px_90px]";
 const ROW_HEIGHT = 46;
-const HOT_COUNT = 5; // top collections highlighted this interval
+// Busiest collections this interval, highlighted in the table.
+const HOT_COUNT = 5;
 
 // Only real, orderable columns are sortable. R/W and TREND are visual-only.
 const SORT_COLUMNS: { key: SortKey; label: string; numeric: boolean }[] = [
@@ -92,7 +93,7 @@ export const ActivityTable = ({ collections, history, mode, className }: Activit
         return new Set(ranked);
     }, [collections, mode]);
 
-    // Dim idle rows only when something is active this interval — never dim the whole
+    // Dim idle rows only when something is active this interval, never dim the whole
     // table (a fresh stream or a genuinely idle server would otherwise gray out entirely).
     const dimIdle = useMemo(
         () => mode === "diff" && collections.some((activity) => activity.total.deltaTime > 0),

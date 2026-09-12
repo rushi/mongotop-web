@@ -13,13 +13,11 @@ export const SummaryStats = ({ summary }: SummaryStatsProps) => {
 
     return (
         <div className="mb-4 border-2 border-border bg-card">
-            {/* ASCII Divider */}
             <div className="flex items-center border-b-2 border-border bg-muted px-4 py-2.5">
                 <span className="font-mono text-xs tracking-wider text-primary uppercase">■ OPERATION_SUMMARY</span>
             </div>
 
             <div className="grid grid-cols-[minmax(160px,auto)_minmax(180px,auto)_1fr_1fr] gap-0">
-                {/* Total Queries */}
                 <div className="border-r-2 border-border p-3">
                     <div className="mb-0.5 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
                         TOTAL_QUERIES
@@ -27,7 +25,6 @@ export const SummaryStats = ({ summary }: SummaryStatsProps) => {
                     <div className="font-mono text-lg text-primary tabular-nums">{summary.totalQueries}</div>
                 </div>
 
-                {/* Unindexed Queries */}
                 <div className="border-r-2 border-border p-3">
                     <div className="mb-0.5 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
                         COLLSCAN_DETECT
@@ -45,7 +42,6 @@ export const SummaryStats = ({ summary }: SummaryStatsProps) => {
                     )}
                 </div>
 
-                {/* Operations Breakdown */}
                 <div className="border-r-2 border-border p-3">
                     <div className="mb-1.5 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
                         OPERATIONS
@@ -65,7 +61,6 @@ export const SummaryStats = ({ summary }: SummaryStatsProps) => {
                     )}
                 </div>
 
-                {/* Collections */}
                 <div className="p-3">
                     <div className="mb-1.5 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
                         COLLECTIONS

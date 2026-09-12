@@ -42,7 +42,7 @@ const buildTopResponse = ({ serverId, collections, intervalMs, serverStartedAt, 
 });
 
 export default async function topRoutes(fastify: FastifyInstance) {
-    // GET /api/top/:serverId - One-time fetch (deltas are zero: no previous sample)
+    // One-time fetch: deltas are zero since there is no previous sample to diff against.
     fastify.get<{
         Params: { serverId: string };
         Querystring: { showAll?: string; readPreference?: string };
@@ -82,7 +82,7 @@ export default async function topRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET /api/top/:serverId/nodes - List replica-set members so the client can pin sampling to one
+    // Lists replica-set members so the client can pin sampling to one.
     fastify.get<{
         Params: { serverId: string };
     }>("/:serverId/nodes", async (request, reply) => {
@@ -111,7 +111,6 @@ export default async function topRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET /api/top/:serverId/stream - Real-time SSE stream of per-interval activity
     fastify.get<{
         Params: { serverId: string };
         Querystring: { refreshInterval?: string; showAll?: string; readPreference?: string; node?: string };

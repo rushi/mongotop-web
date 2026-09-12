@@ -4,8 +4,8 @@ import { createEvlogError } from "evlog";
 import { useEffect, useRef, useState } from "react";
 import { API_BASE, API_KEY } from "../utils/api";
 
-const MAX_RETRY_DELAY = 30000;
-const INITIAL_RETRY_DELAY = 500;
+const MAX_RETRY_DELAY_MS = 30000;
+const INITIAL_RETRY_DELAY_MS = 500;
 
 export const useConnectedClients = (
     serverId: string,
@@ -20,7 +20,7 @@ export const useConnectedClients = (
     const [isConnected, setIsConnected] = useState(false);
     const [isReconnecting, setIsReconnecting] = useState(false);
 
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY);
+    const retryDelayRef = useRef(INITIAL_RETRY_DELAY_MS);
     const abortControllerRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
@@ -65,7 +65,7 @@ export const useConnectedClients = (
                             setIsConnected(true);
                             setIsReconnecting(false);
                             setError(null);
-                            retryDelayRef.current = INITIAL_RETRY_DELAY;
+                            retryDelayRef.current = INITIAL_RETRY_DELAY_MS;
                         } else {
                             throw createEvlogError({
                                 message: `Failed to connect: ${response.statusText}`,
@@ -91,9 +91,8 @@ export const useConnectedClients = (
                             throw err; // Stops reconnection
                         }
 
-                        // Exponential backoff: double the delay, up to MAX_RETRY_DELAY
                         setIsReconnecting(true);
-                        retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY);
+                        retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY_MS);
 
                         // fetchEventSource schedules the next retry after this many ms
                         return retryDelayRef.current;

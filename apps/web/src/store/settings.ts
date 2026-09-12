@@ -2,11 +2,6 @@ import { log } from "evlog";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-/**
- * Application settings store with persistent localStorage
- * Configures default values, auto-save behavior, and issue detection thresholds
- */
-
 export interface IssueThresholds {
     longRunningWarningSecs: number;
     longRunningCriticalSecs: number;
@@ -34,22 +29,14 @@ export interface UiPreferences {
 }
 
 interface SettingsState {
-    // Default filter values
     defaultFilters: DefaultFilters;
-
-    // Auto-save configuration
     autoSave: AutoSaveSettings;
-
-    // Issue detection thresholds
     issueThresholds: IssueThresholds;
-
-    // UI preferences
     uiPreferences: UiPreferences;
 
-    // Settings version - increments when settings should be applied (e.g., on modal close)
+    // Bumped to signal that pending settings should be applied, e.g. on modal close.
     settingsVersion: number;
 
-    // Actions
     setDefaultFilters: (filters: Partial<DefaultFilters>) => void;
     setAutoSave: (autoSave: Partial<AutoSaveSettings>) => void;
     setIssueThresholds: (thresholds: Partial<IssueThresholds>) => void;
@@ -123,8 +110,7 @@ export const useSettings = create<SettingsState>()(
             resetToDefaults: () => set(DEFAULT_STATE),
         }),
         {
-            // localStorage key, not an identifier. Renaming it strands every existing user's saved
-            // state, so it keeps the pre-mongotop-web name.
+            // localStorage key. Renaming it discards every existing user's saved state.
             name: "mongo-query-top-settings",
             onRehydrateStorage: () => onSettingsRehydrated,
         },

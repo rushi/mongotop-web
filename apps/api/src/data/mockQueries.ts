@@ -1,16 +1,6 @@
 import type { MongoQuery } from "@mongotop-web/types";
 
-/**
- * Mock MongoDB queries for UI testing
- * Showcases different scenarios:
- * - Various operation types (query, command, update)
- * - Different runtime ranges (fast to very slow)
- * - COLLSCAN queries (for highlighting)
- * - Different collections and clients
- * - Truncated commands
- *
- * Sorted by microsecs_running descending (longest running at top) to match real query behavior
- */
+// Sorted by microsecs_running descending (longest running at top), matching real currentOp output.
 export const mockQueries: MongoQuery[] = [
     {
         opid: 1561305353,

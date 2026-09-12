@@ -28,10 +28,9 @@ export const getPinnedClient = async (serverId: string, host: string, replicaSet
     return client;
 };
 
-// Resolves the sampling client for a stream. When a specific node is requested,
-// pins to it via a directConnection client so consecutive samples hit the same
-// node (per-interval diffs across different secondaries are meaningless). Falls
-// back to the pooled client if pinning fails (e.g. mongodb+srv uris).
+// Pins sampling to one node so consecutive per-interval diffs stay comparable
+// (diffs across different secondaries are meaningless). Falls back to the
+// pooled client when pinning fails (e.g. mongodb+srv uris).
 export const resolveSampleClient = async (
     pooledClient: MongoClient,
     serverId: string,

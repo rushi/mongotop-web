@@ -1,16 +1,11 @@
 import type { ProcessedQuery } from "@mongotop-web/types";
 
 /**
- * Severity levels for query issues
- * - warning: Performance concern, should be addressed
- * - critical: Severe issue requiring immediate attention
- * - info: Informational, not necessarily a problem
+ * Severity levels: critical (immediate attention), warning (should be addressed),
+ * info (not necessarily a problem).
  */
 export type IssueSeverity = "warning" | "critical" | "info";
 
-/**
- * Represents a detected issue with a MongoDB query
- */
 export interface QueryIssue {
     id: string;
     label: string;
@@ -19,28 +14,18 @@ export interface QueryIssue {
     icon: string;
 }
 
-/**
- * Configuration thresholds for issue detection
- * Adjust these values based on your environment and requirements
- */
 export const DEFAULT_THRESHOLDS = {
     LONG_RUNNING_WARNING_SECS: 30,
     LONG_RUNNING_CRITICAL_SECS: 60,
-    /** Documents examined to returned ratio above this triggers inefficiency warning */
     DOCS_EXAMINED_RATIO_WARNING: 10,
-    /** Queries returning more than this many documents trigger a warning */
     LARGE_RESULT_SET_WARNING: 1000,
-    /** Memory usage above this (bytes) triggers a warning */
     HIGH_MEMORY_WARNING_BYTES: 100 * 1024 * 1024, // 100MB
-    /** Approaching MongoDB's default socket timeout (seconds) */
+    /** MongoDB's default socket/cursor timeout is around 5 minutes (300s). */
     TIMEOUT_RISK_SECS: 300,
 } as const;
 
 export type ThresholdsConfig = typeof DEFAULT_THRESHOLDS;
 
-/**
- * Convert settings thresholds to detector thresholds format
- */
 export function convertSettingsToThresholds(settings: {
     longRunningWarningSecs: number;
     longRunningCriticalSecs: number;
@@ -60,13 +45,7 @@ export function convertSettingsToThresholds(settings: {
 }
 
 /**
- * Issue Detector: Long-Running Queries
- *
- * Detects queries that have been running for an extended period.
- * Long-running queries can:
- * - Consume server resources
- * - Block other operations
- * - Indicate missing indexes or inefficient query patterns
+ * Flags queries running long enough to risk server resources or indicate a missing index.
  *
  * @param query - The processed query to analyze
  * @param thresholds - Optional custom thresholds (defaults to DEFAULT_THRESHOLDS)
@@ -100,15 +79,7 @@ export function detectLongRunning(query: ProcessedQuery, thresholds = DEFAULT_TH
 }
 
 /**
- * Issue Detector: High Memory Usage
- *
- * Detects queries consuming excessive memory.
- * High memory queries can:
- * - Cause out-of-memory errors
- * - Trigger disk-based sorting (very slow)
- * - Impact other operations on the server
- *
- * Looks for: executionStats.memUsage or executionStats.memoryUsageBytes
+ * Flags queries whose reported memory usage exceeds the threshold.
  *
  * @param query - The processed query to analyze
  * @param thresholds - Optional custom thresholds (defaults to DEFAULT_THRESHOLDS)
@@ -134,15 +105,7 @@ export function detectHighMemoryUsage(query: ProcessedQuery, thresholds = DEFAUL
 }
 
 /**
- * Issue Detector: Large Result Sets
- *
- * Detects queries returning a large number of documents.
- * Large result sets can:
- * - Consume excessive network bandwidth
- * - Increase client-side memory usage
- * - Indicate missing pagination or filters
- *
- * Looks for: nReturned, docsExamined, or limit in command
+ * Flags queries with a large limit or returned document count, which may need pagination.
  *
  * @param query - The processed query to analyze
  * @param thresholds - Optional custom thresholds (defaults to DEFAULT_THRESHOLDS)
@@ -154,7 +117,6 @@ export function detectLargeResultSet(query: ProcessedQuery, thresholds = DEFAULT
     const nReturned = executionStats?.nReturned;
     const limit = query.query?.command?.limit;
 
-    // If there's a large limit without proper pagination warning
     if (limit && limit > thresholds.LARGE_RESULT_SET_WARNING) {
         return {
             id: "large-result-set",
@@ -179,15 +141,8 @@ export function detectLargeResultSet(query: ProcessedQuery, thresholds = DEFAULT
 }
 
 /**
- * Issue Detector: Excessive Documents Examined
- *
- * Detects queries that examine many more documents than they return.
- * A high ratio indicates:
- * - Missing or inefficient indexes
- * - Queries that could benefit from better filtering
- * - Potential full collection scans on filtered queries
- *
- * Looks for: totalDocsExamined vs nReturned ratio
+ * Flags queries examining far more documents than they return, a sign of a missing or
+ * inefficient index.
  *
  * @param query - The processed query to analyze
  * @param thresholds - Optional custom thresholds (defaults to DEFAULT_THRESHOLDS)
@@ -217,16 +172,8 @@ export function detectExcessiveDocsExamined(query: ProcessedQuery, thresholds = 
 }
 
 /**
- * Issue Detector: Missing Projection
- *
- * Detects find queries without a projection.
- * Missing projections can:
- * - Transfer unnecessary data over the network
- * - Increase memory usage on both server and client
- * - Slow down query execution
- *
- * Only flags queries that are likely to benefit from projection
- * (not aggregations, counts, etc.)
+ * Flags find queries that fetch full documents instead of a projection. Skips aggregations,
+ * counts, and other operations that don't take a projection.
  *
  * @param query - The processed query to analyze
  *
@@ -236,16 +183,13 @@ export function detectMissingProjection(query: ProcessedQuery): QueryIssue | nul
     const command = query.query?.command;
     const operation = query.operation?.toLowerCase();
 
-    // Only check find operations
     if (operation !== "query" && operation !== "find") {
         return null;
     }
 
-    // Check if projection exists and has fields
     const projection = command?.projection;
     const hasProjection = projection && Object.keys(projection).length > 0;
 
-    // If no projection or empty projection, suggest adding one
     if (!hasProjection) {
         return {
             id: "missing-projection",
@@ -260,15 +204,8 @@ export function detectMissingProjection(query: ProcessedQuery): QueryIssue | nul
 }
 
 /**
- * Issue Detector: In-Memory Sort
- *
- * Detects sorts that cannot use an index and must be done in memory.
- * In-memory sorts:
- * - Are limited to 100MB by default (can cause query failure)
- * - Are significantly slower than index-based sorts
- * - Can cause high memory pressure
- *
- * Looks for: planSummary containing SORT or hasSortStage flag
+ * Flags sorts that fall back to an in-memory sort instead of using an index. In-memory sorts
+ * are capped at 100MB by default and can fail outright on large result sets.
  *
  * @param query - The processed query to analyze
  *
@@ -278,7 +215,6 @@ export function detectInMemorySort(query: ProcessedQuery): QueryIssue | null {
     const planSummary = query.planSummary ?? "";
     const executionStats = query.query?.executionStats;
 
-    // Check for in-memory sort indicators
     const hasSortInPlan = planSummary.includes("SORT");
     const hasSortStage = executionStats?.hasSortStage === true;
     const usedDisk = executionStats?.usedDisk === true;
@@ -298,13 +234,7 @@ export function detectInMemorySort(query: ProcessedQuery): QueryIssue | null {
 }
 
 /**
- * Issue Detector: Timeout Risk
- *
- * Detects queries approaching MongoDB's socket/cursor timeout.
- * Queries at risk of timeout:
- * - May fail unexpectedly
- * - Indicate serious performance problems
- * - Should be killed or optimized immediately
+ * Flags queries approaching MongoDB's socket/cursor timeout, which risk failing outright.
  *
  * @param query - The processed query to analyze
  * @param thresholds - Optional custom thresholds (defaults to DEFAULT_THRESHOLDS)
@@ -328,13 +258,7 @@ export function detectTimeoutRisk(query: ProcessedQuery, thresholds = DEFAULT_TH
 }
 
 /**
- * Issue Detector: Blocking Write
- *
- * Detects write operations that are waiting for a lock.
- * Blocked writes:
- * - Can cause application hangs
- * - May lead to write timeouts
- * - Indicate resource contention issues
+ * Flags write operations blocked waiting for a lock.
  *
  * @param query - The processed query to analyze
  *
@@ -358,15 +282,7 @@ export function detectBlockingWrite(query: ProcessedQuery): QueryIssue | null {
 }
 
 /**
- * Issue Detector: Retry Indicator
- *
- * Detects operations that have been retried.
- * Retried operations indicate:
- * - Transient failures in the cluster
- * - Network issues
- * - Possible data consistency concerns
- *
- * Looks for: numYields, retryCount, or similar retry indicators
+ * Flags operations that were retried, which can indicate transient cluster or network failures.
  *
  * @param query - The processed query to analyze
  *
@@ -389,13 +305,6 @@ export function detectRetryIndicator(query: ProcessedQuery): QueryIssue | null {
     return null;
 }
 
-/**
- * List of all available issue detectors.
- * Add or remove detectors here to customize issue detection.
- *
- * Each detector is a function that takes a ProcessedQuery and optional thresholds,
- * and returns either a QueryIssue or null if no issue is detected.
- */
 export const issueDetectorFns = [
     detectLongRunning,
     detectHighMemoryUsage,
@@ -409,7 +318,7 @@ export const issueDetectorFns = [
 ];
 
 /**
- * Analyzes a query and returns all detected issues.
+ * Runs all detectors against a query and returns the issues found, sorted most severe first.
  *
  * @param query - The processed query to analyze
  * @param options - Optional configuration
@@ -429,7 +338,6 @@ export function detectQueryIssues(
         .filter((issue): issue is QueryIssue => issue !== null)
         .filter((issue) => !excludeIds.includes(issue.id));
 
-    // Sort by severity: critical > warning > info
     const severityOrder: Record<IssueSeverity, number> = {
         critical: 0,
         warning: 1,
@@ -439,9 +347,6 @@ export function detectQueryIssues(
     return issues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
 }
 
-/**
- * Get the appropriate Tailwind CSS classes for an issue severity
- */
 export function getSeverityClasses(severity: IssueSeverity): {
     border: string;
     bg: string;

@@ -21,10 +21,6 @@ interface QueryDetailsProps {
     onOpenChange: (open: boolean) => void;
 }
 
-/**
- * Component to display detected query issues
- * Uses the modular issue detection system
- */
 const QueryIssuesDisplay = ({ query }: { query: ProcessedQuery }) => {
     const { issueThresholds } = useSettings();
     const issues = useMemo(
@@ -79,14 +75,12 @@ const QueryIssuesDisplay = ({ query }: { query: ProcessedQuery }) => {
 
     return (
         <div className="flex flex-col gap-3">
-            {/* Plan Summary Badge (when not COLLSCAN) */}
             {query.planSummary && !query.isCollscan && (
                 <Badge variant="outline" className="w-fit border-2 font-mono text-xs uppercase">
                     {query.planSummary}
                 </Badge>
             )}
 
-            {/* Detected Issues */}
             {allIssues.map((issue) => {
                 const classes = getSeverityClasses(issue.severity);
                 return (
@@ -272,7 +266,6 @@ export const QueryDetails = ({ query, open, onOpenChange }: QueryDetailsProps) =
                 </SheetHeader>
 
                 <div className="mt-4 space-y-4 px-6">
-                    {/* Metadata Grid */}
                     <div className="border-2 border-border bg-card">
                         <div className="border-b-2 border-border bg-muted px-4 py-2">
                             <span className="font-mono text-xs tracking-wider text-primary uppercase">■ METADATA</span>
@@ -337,7 +330,6 @@ export const QueryDetails = ({ query, open, onOpenChange }: QueryDetailsProps) =
                         </div>
                     </div>
 
-                    {/* Geolocation */}
                     {query.client.geo && (
                         <div className="border-2 border-border bg-muted p-4">
                             <div className="mb-2 font-mono text-[10px] tracking-wide text-primary uppercase">
@@ -351,10 +343,8 @@ export const QueryDetails = ({ query, open, onOpenChange }: QueryDetailsProps) =
                         </div>
                     )}
 
-                    {/* Status Badges & Issues */}
                     <QueryIssuesDisplay query={query} />
 
-                    {/* Message */}
                     {query.message && (
                         <div className="border-2 border-border bg-muted p-4">
                             <div className="mb-2 font-mono text-[10px] tracking-wide text-primary uppercase">
@@ -364,7 +354,6 @@ export const QueryDetails = ({ query, open, onOpenChange }: QueryDetailsProps) =
                         </div>
                     )}
 
-                    {/* Query JSON */}
                     <div className="border">
                         <div className="flex items-center justify-between border-b bg-muted px-4 py-3">
                             <span className="font-mono text-xs tracking-wider text-primary uppercase">

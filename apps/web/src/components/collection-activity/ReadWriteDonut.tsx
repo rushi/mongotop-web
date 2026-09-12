@@ -9,9 +9,9 @@ interface ReadWriteDonutProps {
 const RADIUS = 6;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS; // ~37.7
 
-// 16px ring showing the read/write time split (read = lime arc over a cyan base),
-// with the two percentages beside it. Compact by design — the READ/WRITE columns
-// already carry the raw numbers; this is the at-a-glance ratio.
+// 16px ring showing the read/write time split, with the two percentages beside it.
+// Compact by design: the READ/WRITE columns already carry the raw numbers, this is
+// the at-a-glance ratio.
 export const ReadWriteDonut = ({ read, write, className }: ReadWriteDonutProps) => {
     const total = read + write;
 

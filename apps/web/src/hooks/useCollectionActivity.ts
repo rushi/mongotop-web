@@ -4,8 +4,8 @@ import { createEvlogError } from "evlog";
 import { useEffect, useRef, useState } from "react";
 import { API_BASE, API_KEY } from "../utils/api";
 
-const MAX_RETRY_DELAY = 30000; // 30 seconds max
-const INITIAL_RETRY_DELAY = 500; // Start with 0.5 second
+const MAX_RETRY_DELAY_MS = 30000;
+const INITIAL_RETRY_DELAY_MS = 500;
 const MAX_HISTORY = 20; // sparkline window: last N intervals
 
 export const useCollectionActivity = (
@@ -21,7 +21,7 @@ export const useCollectionActivity = (
     const [isConnected, setIsConnected] = useState(false);
     const [isReconnecting, setIsReconnecting] = useState(false);
 
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY);
+    const retryDelayRef = useRef(INITIAL_RETRY_DELAY_MS);
     const abortControllerRef = useRef<AbortController | null>(null);
     // Rolling per-namespace history of total.deltaTime, read during render for sparklines.
     const historyRef = useRef<Map<string, number[]>>(new Map());
@@ -65,7 +65,7 @@ export const useCollectionActivity = (
                     signal: abortController.signal,
                     headers: { "X-API-Key": API_KEY },
                     // Keep streaming while the tab is backgrounded. Default (false) closes
-                    // on hide and reopens on focus — that reconnect resets the server's
+                    // on hide and reopens on focus, and that reconnect resets the server's
                     // previous sample, emitting an all-zero diff frame that dims the table.
                     openWhenHidden: true,
                     async onopen(response) {
@@ -73,7 +73,7 @@ export const useCollectionActivity = (
                             setIsConnected(true);
                             setIsReconnecting(false);
                             setError(null);
-                            retryDelayRef.current = INITIAL_RETRY_DELAY;
+                            retryDelayRef.current = INITIAL_RETRY_DELAY_MS;
                         } else {
                             throw createEvlogError({
                                 message: `Failed to connect: ${response.statusText}`,
@@ -115,7 +115,7 @@ export const useCollectionActivity = (
                         setError("Connection lost");
                         setIsConnected(false);
                         setIsReconnecting(true);
-                        retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY);
+                        retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY_MS);
                         return retryDelayRef.current;
                     },
                     onclose() {

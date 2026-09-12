@@ -59,13 +59,11 @@ export const FilterControls = () => {
 
     return (
         <Card className="border-2 border-border bg-card p-0">
-            {/* Header */}
             <div className="flex items-center border-b-2 border-border bg-muted px-4 py-2.5">
                 <span className="font-mono text-xs tracking-wider text-primary uppercase">■ FILTER_CONTROLS</span>
             </div>
 
             <div className="flex flex-wrap items-end gap-4 p-4">
-                {/* Min Time Input */}
                 <div className="space-y-1">
                     <Label
                         htmlFor="minTime"
@@ -84,7 +82,6 @@ export const FilterControls = () => {
                     />
                 </div>
 
-                {/* Refresh Interval */}
                 <div className="space-y-1">
                     <Label
                         htmlFor="refresh"
@@ -102,7 +99,6 @@ export const FilterControls = () => {
                     />
                 </div>
 
-                {/* IP Filter */}
                 <div className="space-y-1">
                     <Label
                         htmlFor="ipFilter"
@@ -133,7 +129,6 @@ export const FilterControls = () => {
                     </div>
                 </div>
 
-                {/* Show All Toggle & Pause */}
                 <div className="space-y-1">
                     <Label className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
                         OPTIONS
@@ -199,7 +194,6 @@ export const FilterControls = () => {
                     </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="ml-auto flex gap-2">
                     <Button
                         variant="outline"

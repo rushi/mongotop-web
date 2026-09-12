@@ -2,8 +2,7 @@ import axios, { type AxiosError } from "axios";
 import { createEvlogError, parseError } from "evlog";
 import config from "../config";
 
-// Dynamically determine API URL based on config
-// If config.apiUrl is set, use it. Otherwise, use same hostname as web app with the dev API port
+// If config.apiUrl is set, use it. Otherwise, use same hostname as web app with the dev API port.
 export const getApiBaseUrl = () => {
     if (config.apiUrl) {
         return config.apiUrl;

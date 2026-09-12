@@ -19,7 +19,7 @@ const DEFAULT_SERVER_ID = "localhost";
 
 // Overrides --primary (lime) with --secondary-read (cyan) for every descendant that uses
 // text-primary/bg-primary/border-primary, so reading from a secondary is unmistakable
-// app-wide — not just on the few elements that were manually flagged with secondary-read.
+// app-wide, not just on the few elements that were manually flagged with secondary-read.
 const SECONDARY_THEME_STYLE = {
     "--primary": "var(--secondary-read)",
     "--primary-foreground": "var(--secondary-read-foreground)",

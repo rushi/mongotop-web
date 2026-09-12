@@ -29,7 +29,6 @@ const buildClientsData = async (
 };
 
 export default async function clientsRoutes(fastify: FastifyInstance) {
-    // GET /api/clients/:serverId - Get connected clients (one-time fetch)
     fastify.get<{
         Params: { serverId: string };
         Querystring: { showAll?: string; readPreference?: string };
@@ -58,7 +57,6 @@ export default async function clientsRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET /api/clients/:serverId/stream - Real-time SSE stream of connected clients
     fastify.get<{
         Params: { serverId: string };
         Querystring: { refreshInterval?: string; showAll?: string; readPreference?: string; node?: string };
@@ -118,20 +116,16 @@ export default async function clientsRoutes(fastify: FastifyInstance) {
             }
         };
 
-        // Send initial data immediately
         await sendClientUpdate();
 
-        // Setup interval for subsequent updates
         const intervalId = setInterval(sendClientUpdate, Number(refreshInterval) * 1000);
 
-        // Keep connection alive with heartbeat
         const heartbeatId = setInterval(() => {
             if (isActive) {
                 reply.raw.write(`:heartbeat\n\n`);
             }
         }, 30000);
 
-        // Cleanup on connection close
         request.raw.on("close", () => {
             isActive = false;
             clearInterval(intervalId);

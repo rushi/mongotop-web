@@ -12,7 +12,7 @@ interface NodePickerProps {
 }
 
 // Memoized so the streaming table's per-tick re-renders don't re-render the open
-// Select — re-rendering an open Radix popover makes it flicker and reflow.
+// Select: re-rendering an open Radix popover makes it flicker and reflow.
 const NodePickerComponent = ({ isSecondary, nodes, value, onChange }: NodePickerProps) => {
     const selectedRole = getNodeRole(nodes, value);
 

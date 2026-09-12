@@ -6,8 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { useSettings } from "../store/settings";
 import { API_BASE, API_KEY } from "../utils/api";
 
-const MAX_RETRY_DELAY = 30000; // 30 seconds max
-const INITIAL_RETRY_DELAY = 500; // Start with 0.5 second
+const MAX_RETRY_DELAY_MS = 30000;
+const INITIAL_RETRY_DELAY_MS = 500;
 
 export const useServerSentEvents = (
     serverId: string,
@@ -27,14 +27,13 @@ export const useServerSentEvents = (
     const [isReconnecting, setIsReconnecting] = useState(false);
 
     const reconnectAttemptsRef = useRef(0);
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY);
+    const retryDelayRef = useRef(INITIAL_RETRY_DELAY_MS);
     const abortControllerRef = useRef<AbortController | null>(null);
     const lastUpdateTimeRef = useRef<number>(Date.now());
 
     useEffect(() => {
         if (isPaused || !enabled) {
             if (abortControllerRef.current) {
-                // Cleanup connection if paused
                 log.debug({ connection: { event: "pausing" } });
                 abortControllerRef.current.abort();
                 abortControllerRef.current = null;
@@ -43,7 +42,7 @@ export const useServerSentEvents = (
             setIsConnected(false);
             setIsReconnecting(false);
             if (isPaused) {
-                setError(undefined); // Clear error when paused
+                setError(undefined);
             }
             return;
         }
@@ -58,10 +57,8 @@ export const useServerSentEvents = (
             const abortController = new AbortController();
             abortControllerRef.current = abortController;
 
-            // Read current settings when establishing connection
             const { autoSave, issueThresholds } = useSettings.getState();
 
-            // Build URL with query params
             const params = new URLSearchParams({
                 minTime: String(minTime),
                 refreshInterval: String(refreshInterval),
@@ -69,13 +66,11 @@ export const useServerSentEvents = (
                 readPreference,
             });
 
-            // Add auto-save settings
             params.append("autoSaveEnabled", String(autoSave.enabled));
             params.append("autoSaveLongRunningThreshold", String(autoSave.longRunningThresholdSecs));
             params.append("autoSaveCollscan", String(autoSave.saveCollscanQueries));
             params.append("autoSaveTimeoutRisk", String(autoSave.saveTimeoutRiskQueries));
 
-            // Add timeout risk threshold
             params.append("timeoutRiskThreshold", String(issueThresholds.timeoutRiskSecs));
 
             const url = `${API_BASE}/queries/${serverId}/stream?${params.toString()}`;
@@ -91,7 +86,7 @@ export const useServerSentEvents = (
                             setIsConnected(true);
                             setIsReconnecting(false);
                             setError(undefined);
-                            retryDelayRef.current = INITIAL_RETRY_DELAY;
+                            retryDelayRef.current = INITIAL_RETRY_DELAY_MS;
                             reconnectAttemptsRef.current = 0;
                         } else {
                             log.warn({
@@ -137,12 +132,10 @@ export const useServerSentEvents = (
                             throw err; // Stops reconnection
                         }
 
-                        // Attempt to reconnect with exponential backoff
                         setIsReconnecting(true);
                         reconnectAttemptsRef.current++;
 
-                        // Exponential backoff: double the delay, up to MAX_RETRY_DELAY
-                        retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY);
+                        retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY_MS);
                         log.info({
                             connection: {
                                 event: "reconnecting",
@@ -151,7 +144,6 @@ export const useServerSentEvents = (
                             },
                         });
 
-                        // Return the retry delay to trigger reconnection
                         return retryDelayRef.current;
                     },
                     onclose() {
@@ -186,11 +178,10 @@ export const useServerSentEvents = (
         };
     }, [serverId, minTime, refreshInterval, showAll, readPreference, enabled, isPaused, settingsVersion]);
 
-    // Check for stale connection (no updates for > 2 seconds)
-    // Skip stale detection when page is hidden to avoid false positives
+    // Check for stale connection (no updates for > 3 seconds). Skip while the page is
+    // hidden to avoid false positives.
     const documentVisibility = useDocumentVisibility();
 
-    // Reset stale state when page becomes visible
     useEffect(() => {
         if (documentVisibility === "visible") {
             lastUpdateTimeRef.current = Date.now();
@@ -198,7 +189,6 @@ export const useServerSentEvents = (
         }
     }, [documentVisibility]);
 
-    // Use useInterval for stale checking with conditional execution
     useInterval(
         () => {
             const timeSinceLastUpdate = Date.now() - lastUpdateTimeRef.current;
@@ -211,7 +201,6 @@ export const useServerSentEvents = (
                 }
             }
         },
-        // Only run when connected, not paused, and page is visible
         isConnected && !isPaused && documentVisibility === "visible" ? 500 : undefined,
     );
 

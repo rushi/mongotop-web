@@ -2,11 +2,9 @@ import { createError } from "evlog";
 
 const SCHEME = "mongodb://";
 
-// Rewrites a replica-set connection string to talk directly to a single host,
-// so per-interval `top` sampling always hits the same node (cross-node diffs are
-// meaningless). Drops replicaSet and forces directConnection; keeps credentials,
-// database, and auth params. Only standard mongodb:// URIs are supported —
-// mongodb+srv:// can't be pinned this way, so the caller must fall back.
+// Rewrites a replica-set URI to target one host directly (drops replicaSet,
+// forces directConnection) so per-interval sampling stays on the same node.
+// Only standard mongodb:// URIs work; the caller falls back for mongodb+srv://.
 export const buildDirectUri = (uri: string, host: string): string => {
     if (!uri.startsWith(SCHEME)) {
         throw createError({

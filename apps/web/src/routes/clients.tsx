@@ -66,7 +66,7 @@ function ConnectedUsers() {
     );
 
     // Defer the client list feeding the virtualized table so a burst of connections
-    // can't block scroll — sort + render run at low priority
+    // can't block scroll, since sort + render run at low priority.
     const deferredClients = useDeferredValue(data?.clients ?? EMPTY_CLIENTS);
 
     const filteredClients = useMemo(() => {

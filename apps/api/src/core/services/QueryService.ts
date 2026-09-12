@@ -150,7 +150,6 @@ export class QueryService {
         const ip = parts[0];
         const port = parts[1] ? parseInt(parts[1], 10) : undefined;
 
-        // Only lookup geo for public IPs
         const isPublicIp = ip && !ip.startsWith("192.") && !ip.startsWith("10.") && !ip.startsWith("127.");
         const geo = isPublicIp ? this.lookupGeo(ip) : null;
 

@@ -33,8 +33,7 @@ export const usePreferences = create<PreferencesState>()(
             resetFilters: () => set({ isPaused: false, ipFilter: undefined }),
         }),
         {
-            // localStorage key, not an identifier. Renaming it strands every existing user's saved
-            // state, so it keeps the pre-mongotop-web name.
+            // localStorage key. Renaming it discards every existing user's saved state.
             name: "mongo-query-top-preferences",
         },
     ),

@@ -23,7 +23,7 @@ const getDefaults = () => {
     };
 };
 
-// Parsers carry no defaults here — defaults are applied dynamically from settings below,
+// Parsers carry no defaults here. Defaults are applied dynamically from settings below,
 // since they can change at runtime independent of the URL.
 const preferenceParsers = {
     sortBy: parseAsString,
@@ -82,12 +82,10 @@ export const useUrlPreferences = () => {
     });
 
     const setSortColumn = useMemoizedFn((column: SortColumn) => {
-        // If clicking the same column, toggle direction
         if (preferences.sortBy === column) {
             const newDirection = preferences.sortDirection === "desc" ? "asc" : "desc";
             setPreferences({ sortDirection: newDirection });
         } else {
-            // New column - default to descending
             setPreferences({ sortBy: column, sortDirection: "desc" });
         }
     });

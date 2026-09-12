@@ -1,7 +1,6 @@
 import util from "util";
 import humanizeDuration from "humanize-duration";
 
-// Helper to format run time
 const shortHumanizeTime = humanizeDuration.humanizer({
     spacer: "",
     delimiter: " ",

@@ -68,7 +68,7 @@ export const ClientTable = ({ clients, className }: { clients: ConnectedClient[]
 
     const sortedClients = useMemo(() => {
         if (!sortKey) {
-            // No explicit sort — keep server order (active first, then runtime desc).
+            // No explicit sort: keep server order (active first, then runtime desc).
             return clients;
         }
 
@@ -110,7 +110,6 @@ export const ClientTable = ({ clients, className }: { clients: ConnectedClient[]
                 <span className="font-mono text-xs tracking-wider text-primary uppercase">■ CONNECTED_CLIENTS</span>
             </div>
 
-            {/* Column headers */}
             <div className={cn("grid shrink-0 gap-3 border-b-2 border-border bg-card px-4 py-3", GRID_COLS)}>
                 {COLUMNS.map((column) => (
                     <SortableColumnHeader
@@ -124,7 +123,6 @@ export const ClientTable = ({ clients, className }: { clients: ConnectedClient[]
                 ))}
             </div>
 
-            {/* Rows */}
             <div ref={parentRef} className="min-h-0 flex-1 overflow-auto">
                 <div style={{ height: `${virtualizer.getTotalSize()}px`, position: "relative" }}>
                     {virtualizer.getVirtualItems().map((virtualRow) => {

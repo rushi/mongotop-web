@@ -21,7 +21,6 @@ const apiKey = config.get("api.apiKey");
 // Allow override via command-line argument for API URL (for production builds)
 const apiUrl = process.argv[2] || `http://localhost:${apiPort}`;
 
-// Generate TypeScript config file
 const configContent = `/**
  * Application configuration
  * Auto-generated from config/local.yaml by scripts/generate-web-config.js
@@ -41,7 +40,6 @@ const config: AppConfig = {
 export default config;
 `;
 
-// Write config file
 const outputPath = join(rootDir, "apps", "web", "src", "config.ts");
 writeFileSync(outputPath, configContent);
 

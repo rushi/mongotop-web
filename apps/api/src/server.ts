@@ -11,7 +11,6 @@ import queriesRoutes from "./routes/queries.js";
 import serversRoutes from "./routes/servers.js";
 import topRoutes from "./routes/top.js";
 
-// Extend Fastify types to include services
 declare module "fastify" {
     interface FastifyRequest {
         services: {
@@ -25,20 +24,18 @@ declare module "fastify" {
 // Initialize evlog before Fastify so wide events carry the service name.
 initLogger({ env: { service: "mongotop-web-api" } });
 
-// evlog is the only logger — Fastify's pino is disabled. The evlog plugin emits one wide
+// evlog is the only logger, Fastify's pino is disabled. The evlog plugin emits one wide
 // event per request via request.log; the global `log` (evlog) handles standalone events
 // (startup/shutdown, SSE lifecycle, auto-save, idle disconnect).
 const fastify = Fastify({ logger: false });
 
-// Services - singleton instances
 const mongoService = new MongoConnectionService(config.get<number>("api.idleDisconnectMs"));
 const queryService = new QueryService();
 const loggerService = new QueryLoggerService();
 
-// CORS for frontend - allow configured origins + 192.x.x.x IP range
 await fastify.register(cors, {
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl)
+        // Allow requests with no origin (mobile apps, curl) alongside configured origins.
         if (!origin) {
             callback(null, true);
             return;
@@ -46,39 +43,36 @@ await fastify.register(cors, {
 
         const configuredOrigins = config.get<string[]>("api.cors.origins");
 
-        // Check if origin matches configured origins
         const isConfiguredOrigin = configuredOrigins.includes(origin);
         if (isConfiguredOrigin) {
             callback(null, true);
             return;
         }
 
-        // Check if origin is from 192.x.x.x IP range (private network)
+        // Also allow the 192.x.x.x range so LAN dev machines can reach the API.
         const is192Range = /^ht{2}ps?:\/{2}192(?:\.\d{1,3}){3}(:\d+)?$/.test(origin);
         if (is192Range) {
             callback(null, true);
             return;
         }
 
-        // Reject all other origins
         callback(new Error("Not allowed by CORS"), false);
     },
     credentials: config.get<boolean>("api.cors.credentials"),
 });
 
-// evlog — emit one structured wide event per request via request.log (the only request
+// evlog emits one structured wide event per request via request.log (the only request
 // logger, since Fastify's pino is disabled). Registered before the auth/service hooks so
 // request.log is available inside them.
 await fastify.register(evlog);
 
-// Simple API key auth middleware (supports both header and query parameter for EventSource compatibility)
+// API key auth: accepts header or query param since EventSource can't set custom headers.
 fastify.addHook("onRequest", async (request, reply) => {
     // Skip auth for OPTIONS requests (CORS preflight)
     if (request.method === "OPTIONS") {
         return;
     }
 
-    // Skip auth for health check
     if (request.url === "/health") {
         return;
     }
@@ -93,12 +87,10 @@ fastify.addHook("onRequest", async (request, reply) => {
     }
 });
 
-// Attach services to request context
 fastify.addHook("onRequest", async (request) => {
     request.services = { mongoService, queryService, loggerService };
 });
 
-// Routes
 await fastify.register(serversRoutes, { prefix: "/api/servers" });
 await fastify.register(queriesRoutes, { prefix: "/api/queries" });
 await fastify.register(clientsRoutes, { prefix: "/api/clients" });
@@ -117,7 +109,6 @@ fastify.setErrorHandler((error, request, reply) => {
     });
 });
 
-// Health check
 fastify.get("/health", async () => {
     return {
         status: "ok",
@@ -126,7 +117,6 @@ fastify.get("/health", async () => {
     };
 });
 
-// Graceful shutdown
 process.on("SIGINT", async () => {
     log.info({ server: { event: "shutdown" } });
     await mongoService.disconnectAll();
@@ -143,7 +133,6 @@ process.on("SIGTERM", async () => {
     process.exit(0);
 });
 
-// Start server
 const start = async () => {
     try {
         const port = config.get<number>("api.port");

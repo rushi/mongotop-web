@@ -18,7 +18,6 @@ import { cn } from "../lib/utils";
 import { usePreferences } from "../store/preferences";
 import { apiClient, getApiBaseUrl } from "../utils/api";
 
-// Generate summary from filtered queries
 const generateSummary = (queries: ProcessedQuery[]): QuerySummary => {
     const operations: Record<string, number> = {};
     const collections: Record<string, number> = {};
@@ -116,25 +115,22 @@ function Dashboard() {
     }, [data?.queries, ipFilter]);
 
     // Defer the list feeding the virtualized table so a burst of incoming
-    // queries can't block scroll/hover — sort + render run at low priority
+    // queries can't block scroll/hover, since sort + render run at low priority.
     const deferredQueries = useDeferredValue(filteredQueries);
 
-    // Generate summary from filtered queries
     const filteredSummary = useMemo(() => {
         if (!data) {
             return undefined;
         }
 
-        // If IP filter is active, always regenerate summary from filtered queries
         if (ipFilter) {
             return generateSummary(filteredQueries);
         }
 
-        // If no filter is active, use the original summary from the backend
         return data.summary;
     }, [filteredQueries, data, ipFilter]);
 
-    // Auto-connect to MongoDB on mount
+    // Auto-connect to MongoDB on mount / server change
     useEffect(() => {
         const connectToMongo = async () => {
             setConnectionState({ isConnecting: true, connectError: null });
@@ -153,7 +149,6 @@ function Dashboard() {
         connectToMongo();
     }, [serverId, setConnectionState]);
 
-    // Update browser tab title with query count
     const serverName = servers.find((s) => s.id === serverId)?.name ?? serverId;
     const queryCount = filteredQueries.length;
     const baseTitle = serverName ? `[${serverName}] MongoDB Query Monitor` : "MongoDB Query Monitor";
@@ -174,7 +169,6 @@ function Dashboard() {
 
     return (
         <div className="flex h-full flex-col overflow-hidden bg-background p-6">
-            {/* ASCII Header Border */}
             <div
                 className={cn(
                     "animate-reveal mb-4 shrink-0 border-2 p-4 font-mono text-xs leading-tight opacity-0",

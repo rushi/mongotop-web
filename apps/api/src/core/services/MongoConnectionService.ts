@@ -6,8 +6,8 @@ export class MongoConnectionService {
     private readonly activeStreamCounts: Map<string, number> = new Map();
     private readonly idleTimers: Map<string, NodeJS.Timeout> = new Map();
 
-    // idleDisconnectMs comes from config/default.yaml (api.idleDisconnectMs) — no local default,
-    // config is the single source of truth so the two values can't drift.
+    // No local default for idleDisconnectMs. config/default.yaml (api.idleDisconnectMs) is the
+    // single source of truth, so the two values cannot drift.
     constructor(private readonly idleDisconnectMs: number) {}
 
     async connect(serverId: string, uri: string): Promise<MongoClient> {
@@ -49,15 +49,12 @@ export class MongoConnectionService {
         this.connections.clear();
     }
 
-    // Call when an SSE stream for serverId starts. Cancels any pending idle disconnect.
     registerStream(serverId: string): void {
         this.clearIdleTimer(serverId);
         const count = this.activeStreamCounts.get(serverId) ?? 0;
         this.activeStreamCounts.set(serverId, count + 1);
     }
 
-    // Call when an SSE stream for serverId ends. Once the last viewer leaves,
-    // starts a grace-period timer before disconnecting the underlying MongoClient.
     unregisterStream(serverId: string): void {
         const count = (this.activeStreamCounts.get(serverId) ?? 1) - 1;
 

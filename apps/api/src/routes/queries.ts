@@ -5,7 +5,6 @@ import { parseReadPreference } from "../core/lib/readPreference.js";
 import { mockQueries } from "../data/mockQueries.js";
 
 export default async function queriesRoutes(fastify: FastifyInstance) {
-    // GET /api/queries/mock - Get mock queries (for UI testing)
     fastify.get<{
         Querystring: { minTime?: string; showAll?: string };
     }>("/mock", async (request) => {
@@ -15,12 +14,10 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
         const minTimeSeconds = Number(minTime) / 1000;
         const shouldShowAll = showAll === "true";
 
-        // Filter queries based on minTime
         const filteredQueries = shouldShowAll
             ? mockQueries
             : mockQueries.filter((q: MongoQuery) => q.secs_running >= minTimeSeconds);
 
-        // Process queries using the query service
         const queries = request.services.queryService.processQueries(filteredQueries, shouldShowAll);
         const summary = request.services.queryService.generateSummary(queries);
 
@@ -35,13 +32,11 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
         };
     });
 
-    // GET /api/queries/mock/stream - Real-time SSE stream with mock data
     fastify.get<{
         Querystring: { minTime?: string; refreshInterval?: string; showAll?: string };
     }>("/mock/stream", async (request, reply) => {
         const { minTime = "1000", refreshInterval = "2", showAll = "false" } = request.query;
 
-        // Setup SSE headers with CORS
         reply.raw.writeHead(200, {
             "Content-Type": "text/event-stream",
             "Cache-Control": "no-cache",
@@ -63,7 +58,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
                 const minTimeSeconds = Number(minTime) / 1000;
                 const shouldShowAll = showAll === "true";
 
-                // Filter queries based on minTime
                 const filteredQueries = shouldShowAll
                     ? mockQueries
                     : mockQueries.filter((q: MongoQuery) => q.secs_running >= minTimeSeconds);
@@ -95,32 +89,27 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
             }
         };
 
-        // Send initial data immediately
         await sendQueryUpdate();
 
-        // Setup interval for subsequent updates
         const intervalId = setInterval(sendQueryUpdate, Number(refreshInterval) * 1000);
 
-        // Cleanup on connection close
         request.raw.on("close", () => {
             isActive = false;
             clearInterval(intervalId);
             log.info({ sse: { event: "closed", route: "mock" } });
         });
 
-        // Keep connection alive with heartbeat
         const heartbeatId = setInterval(() => {
             if (isActive) {
                 reply.raw.write(`:heartbeat\n\n`);
             }
-        }, 30000); // Every 30 seconds
+        }, 30000);
 
         request.raw.on("close", () => {
             clearInterval(heartbeatId);
         });
     });
 
-    // GET /api/queries/:serverId - Get current queries (one-time fetch)
     fastify.get<{
         Params: { serverId: string };
         Querystring: { minTime?: string; showAll?: string; readPreference?: string };
@@ -164,7 +153,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET /api/queries/:serverId/stream - Real-time SSE stream
     fastify.get<{
         Params: { serverId: string };
         Querystring: {
@@ -208,7 +196,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
             return reply.raw.end();
         }
 
-        // Setup SSE headers with CORS
         reply.raw.writeHead(200, {
             "Content-Type": "text/event-stream",
             "Cache-Control": "no-cache",
@@ -243,13 +230,11 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
                 const queries = request.services.queryService.processQueries(result.inprog, showAll === "true");
                 const summary = request.services.queryService.generateSummary(queries);
 
-                // Auto-save queries if enabled
                 if (autoSaveEnabled === "true") {
                     const longRunningThresholdSecs = Number(autoSaveLongRunningThreshold);
                     const timeoutRiskSecs = Number(timeoutRiskThreshold);
 
                     for (const query of queries) {
-                        // Skip if already saved
                         if (savedQueryIds.has(query.opid)) {
                             continue;
                         }
@@ -257,7 +242,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
                         let shouldSave = false;
                         let saveType = "auto-save";
 
-                        // Check long-running threshold
                         if (query.secs_running >= longRunningThresholdSecs) {
                             shouldSave = true;
                             saveType = "auto-save-long-running";
@@ -271,14 +255,12 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
                             });
                         }
 
-                        // Check COLLSCAN
                         if (autoSaveCollscan === "true" && query.isCollscan) {
                             shouldSave = true;
                             saveType = "auto-save-collscan";
                             log.info({ autoSave: { type: "collscan", opid: query.opid, namespace: query.namespace } });
                         }
 
-                        // Check timeout risk
                         if (autoSaveTimeoutRisk === "true" && query.secs_running >= timeoutRiskSecs) {
                             shouldSave = true;
                             saveType = "auto-save-timeout-risk";
@@ -324,13 +306,10 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
             }
         };
 
-        // Send initial data immediately
         await sendQueryUpdate();
 
-        // Setup interval for subsequent updates
         const intervalId = setInterval(sendQueryUpdate, Number(refreshInterval) * 1000);
 
-        // Cleanup on connection close
         request.raw.on("close", () => {
             isActive = false;
             clearInterval(intervalId);
@@ -339,19 +318,17 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
             log.info({ sse: { event: "closed", route: "queries", server: serverId } });
         });
 
-        // Keep connection alive with heartbeat
         const heartbeatId = setInterval(() => {
             if (isActive) {
                 reply.raw.write(`:heartbeat\n\n`);
             }
-        }, 30000); // Every 30 seconds
+        }, 30000);
 
         request.raw.on("close", () => {
             clearInterval(heartbeatId);
         });
     });
 
-    // POST /api/queries/:serverId/snapshot - Save snapshot of current queries
     fastify.post<{
         Params: { serverId: string };
         Querystring: { minTime?: string; readPreference?: string };
@@ -393,7 +370,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // POST /api/queries/:serverId/save - Save a single query
     fastify.post<{
         Params: { serverId: string };
         Body: { query: ProcessedQuery; type?: string };
@@ -417,7 +393,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET /api/queries/:serverId/logs - List saved log files
     fastify.get<{
         Params: { serverId: string };
     }>("/:serverId/logs", async (request, reply) => {
@@ -439,7 +414,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // GET /api/queries/:serverId/logs/:filename - Read a specific log file
     fastify.get<{
         Params: { serverId: string; filename: string };
     }>("/:serverId/logs/:filename", async (request, reply) => {
@@ -461,7 +435,6 @@ export default async function queriesRoutes(fastify: FastifyInstance) {
         }
     });
 
-    // POST /api/queries/:serverId/kill/:opid - Kill a running operation
     fastify.post<{
         Params: { serverId: string; opid: string };
     }>("/:serverId/kill/:opid", async (request, reply) => {

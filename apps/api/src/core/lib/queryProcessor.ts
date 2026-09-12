@@ -121,7 +121,6 @@ export const sanitizeQuery = (q: MongoQuery, full = true): Record<string, unknow
     }
 
     if (Object.keys(query).length === 1 && query.command) {
-        // The query is the only thing left after filtering
         return query.command as Record<string, unknown>;
     }
 
@@ -134,8 +133,8 @@ interface UserAgentRule {
     label: string;
 }
 
-// Ordered — first match wins. Order matters: appName takes precedence over
-// clientMetadata, and driver/application checks interleave to preserve behavior.
+// Ordered, first match wins. appName checks precede clientMetadata checks, and
+// driver/application checks interleave to preserve existing behavior.
 const USER_AGENT_RULES: UserAgentRule[] = [
     { getValue: (q) => q.appName, pattern: /nosqlbooster/i, label: "NoSQLBooster" },
     { getValue: (q) => q.appName, pattern: /mongodb monitoring module/i, label: "Monitoring Module" },
