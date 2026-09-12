@@ -151,7 +151,7 @@ function Dashboard() {
 
     const serverName = servers.find((s) => s.id === serverId)?.name ?? serverId;
     const queryCount = filteredQueries.length;
-    const baseTitle = serverName ? `[${serverName}] MongoDB Query Monitor` : "MongoDB Query Monitor";
+    const baseTitle = serverName ? `[${serverName}] Query Monitor` : "MongoTop";
     useTitle(queryCount >= 2 ? `(${queryCount}) ${baseTitle}` : baseTitle);
 
     const handleQueryClick = (query: ProcessedQuery) => {
