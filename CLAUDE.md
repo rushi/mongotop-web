@@ -1,12 +1,12 @@
-# MongoDB Query Top
+# MongoTop
 
 Real-time MongoDB operation monitor (like Unix `top`) — Turborepo monorepo with a Fastify API and React dashboard.
 
 ## Monorepo Layout
 
 ```
-apps/api/        Fastify REST API + SSE server (port 7001 dev / 7011 prod)
-apps/web/        React dashboard — Vite + TanStack Router (port 7000 dev / 7010 prod)
+apps/api/        Fastify REST API + SSE server (port 7001 dev / 7011 prod) — see apps/api/CLAUDE.md
+apps/web/        React dashboard — Vite + TanStack Router (port 7000 dev / 7010 prod) — see apps/web/CLAUDE.md
 packages/types/  Shared TypeScript types (API contracts, MongoDB types)
 config/          YAML config (default.yaml checked in, local.yaml gitignored)
 ```
@@ -14,7 +14,7 @@ config/          YAML config (default.yaml checked in, local.yaml gitignored)
 ## Key Commands
 
 ```bash
-pnpm run dev:web    # API + frontend (most common)
+pnpm run dev        # API + frontend (most common)
 pnpm run dev:api    # API only
 pnpm run build      # build all packages
 pnpm run format     # Prettier across all packages — run before every commit
@@ -22,7 +22,7 @@ pnpm run format     # Prettier across all packages — run before every commit
 
 ## Configuration System
 
-Uses the Node.js `config` package — merges `config/default.yaml` → `config/local.yaml`.
+Uses the Node.js `config` package — merges `config/default.yaml` → `config/local.yaml` (gitignored; copy `config/local.yaml.example` to start one).
 
 ```yaml
 servers:
@@ -37,24 +37,9 @@ api:
 
 `config/production.yaml` overrides `api.port` to `7011` and `frontend.url` to `http://localhost:7010` when `NODE_ENV=production` (Docker sets this automatically).
 
-In code: `config.get<string>("api.apiKey")`, `config.get<Record<string, ServerConfig>>("servers")`
+Backend reads it directly: `config.get<string>("api.apiKey")`, `config.get<Record<string, ServerConfig>>("servers")`.
 
-## Environment Variables
-
-**`apps/api/.env`**
-
-```bash
-API_KEY=dev-key-change-in-production
-FRONTEND_URL=http://localhost:3000
-LOG_LEVEL=info
-```
-
-**`apps/web/.env`**
-
-```bash
-VITE_API_URL=http://localhost:7001
-VITE_API_KEY=dev-key-change-in-production
-```
+Frontend never touches YAML or `import.meta.env` — no `.env` files exist anywhere in this repo. `scripts/generate-web-config.js` runs before every `dev`/`dev:api`/`build` and writes the gitignored `apps/web/src/config.ts` from the same YAML; web code imports `config` from `../config`.
 
 ## Code Style (all packages)
 
@@ -62,7 +47,7 @@ VITE_API_KEY=dev-key-change-in-production
 - Arrow functions preferred; async/await for all async ops
 - Named exports always (`export const Foo`) — default exports only for Fastify route files
 - Run `pnpm format` before every commit
-- Use package.json scripts (`npm run lint`) not direct tool invocation (`npx eslint`)
+- Use package.json scripts (`pnpm run lint`) not direct tool invocation (`npx eslint`)
 - After multi-file edits: run `pnpm build` to catch TypeScript errors before declaring done
 
 ## Logging (evlog — use everywhere)
@@ -71,10 +56,8 @@ VITE_API_KEY=dev-key-change-in-production
 
 - **Structured wide events, not strings.** Group data into objects: `log.info({ sse: { event: "closed", server: serverId } })`, not `log.info("closed " + serverId)`. The global `log` API takes an object (`log.info({...})`, `log.warn({...})`, `log.error({...})`).
 - **Errors:** `throw createError({ message, status, why, fix })` (backend) / `createEvlogError({...})` (frontend) instead of `throw new Error(...)`. Read user-facing fields with `parseError(err)`.
-- **Backend** (`apps/api`): request-scoped context → `request.log.set({...})` or `useLogger()` (from `evlog/fastify`) inside services; standalone events (startup, SSE lifecycle, background tasks) → global `log` (from `evlog`). Fastify's pino is disabled (`logger: false`) — `fastify.log` is a no-op, don't use it.
-- **Frontend** (`apps/web`): import `{ log, parseError, createEvlogError }` from `evlog` (console-only via the `evlog/vite` plugin).
 
-See per-app `CLAUDE.md` and the `review-logging-patterns` skill for details.
+Backend/frontend specifics (request-scoped context, `useLogger()`, vite plugin setup) live in `apps/api/CLAUDE.md` and `apps/web/CLAUDE.md`. Deeper review checklist: the `evlog-review-logging-practices` skill.
 
 ## Docker
 

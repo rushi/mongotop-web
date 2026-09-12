@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="docs/logo.png" alt="MongoDB Query Top Logo" width="100" />
-  <h1>MongoDB Query "Top"</h1>
+  <img src="docs/logo.png" alt="MongoTop logo" width="100" />
+  <h1>MongoTop</h1>
 </div>
 
 Watch what your MongoDB cluster is doing right now — a `top`-style live view of `db.currentOp()`, streamed to a web dashboard via SSE, with slow and unindexed queries called out automatically.
@@ -15,6 +15,7 @@ Watch what your MongoDB cluster is doing right now — a `top`-style live view o
 - **Interactive controls** (pause, reverse, snapshot, show all)
 - **Multi-server support** with connection management and idle auto-disconnect
 - **Web dashboard** with virtualized table and JSON viewer
+- **Connected clients tab** listing live connections by client, user, and replica set node
 - **Collection activity tab** with per-interval/cumulative view and live server uptime, bookmarkable via URL
 
 ## Why?
@@ -37,7 +38,7 @@ This tool provides:
 
 ## Screenshot
 
-![MongoDB Query Top Dashboard](docs/screenshot.png)
+![MongoTop dashboard](docs/screenshot.png)
 
 ## Quick Start
 
@@ -47,8 +48,8 @@ pnpm install
 # Configure your MongoDB servers (see Configuration section)
 cp config/local.yaml.example config/local.yaml
 
-# Start web dashboard
-pnpm run dev:web
+# Start API + dashboard
+pnpm run dev
 ```
 
 ## Production (Local)
@@ -102,7 +103,7 @@ See **[docs/DOCKER.md](docs/DOCKER.md)** for complete documentation including pr
 ### Web Dashboard
 
 ```bash
-pnpm run dev:web
+pnpm run dev
 ```
 
 Opens **http://localhost:7000** with:
@@ -111,6 +112,7 @@ Opens **http://localhost:7000** with:
 - Interactive table with virtualization
 - Query details with JSON viewer
 - Server selection and connection management
+- Connected clients tab - live connections grouped by client and user, filterable by replica set node
 - Collection activity tab — per-interval or cumulative op counts by collection, plus live server uptime
 
 ### API Server
@@ -184,7 +186,7 @@ apps/
 ├── api/      # Fastify REST API + SSE streaming
 │             # Includes MongoDB services and query processing
 └── web/      # React dashboard (TanStack Router, Zustand, shadcn/ui)
-│             # Includes utility functions for styling
+              # Includes utility functions for styling
 
 packages/
 └── types/    # Shared TypeScript types
@@ -209,9 +211,8 @@ packages/
 pnpm install
 
 # Development modes
+pnpm run dev        # API + Web (recommended)
 pnpm run dev:api    # API only
-pnpm run dev:web    # API + Web (recommended)
-pnpm run dev        # All apps
 
 # Build all packages
 pnpm run build
@@ -219,8 +220,15 @@ pnpm run build
 # Build specific package
 turbo build --filter=@mongotop-web/api
 
-# Format code
+# Run tests (vitest, api + web)
+pnpm -r test
+
+# Lint and format
+pnpm run lint
 pnpm run format
+
+# Kill stale dev/prod processes
+pnpm run cleanup
 ```
 
 ## Documentation
@@ -231,10 +239,15 @@ pnpm run format
 
 ## Query Logging
 
-Queries are auto-saved to `logs/<server-id>/` when:
+Auto-save is off by default. Turn it on from the dashboard settings, or pass `autoSaveEnabled=true` to `GET /api/queries/:serverId/stream`. Once on, queries are written to `logs/<server-id>/` when any of these match:
 
-- Runtime exceeds configured threshold (default: 10s)
-- Query uses COLLSCAN (collection scan)
+| Trigger                    | Query param                              | Default |
+| -------------------------- | ---------------------------------------- | ------- |
+| Runtime exceeds threshold  | `autoSaveLongRunningThreshold` (seconds) | `60`    |
+| Query uses COLLSCAN        | `autoSaveCollscan`                       | `true`  |
+| Query nears client timeout | `autoSaveTimeoutRisk`                    | `true`  |
+
+Save a single query or a full snapshot at any time from the dashboard, regardless of these settings.
 
 ## License
 

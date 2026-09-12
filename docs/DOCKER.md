@@ -201,7 +201,7 @@ docker compose ps
 For development with hot-reload, use the native pnpm commands instead of Docker:
 
 ```bash
-pnpm run dev:web
+pnpm run dev
 ```
 
 **Build and test Docker images locally:**

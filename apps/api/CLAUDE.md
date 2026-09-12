@@ -4,7 +4,7 @@ Fastify REST API with Server-Sent Events for real-time query streaming. Entry po
 
 ## Architecture
 
-**Authentication**: `X-API-Key` header or `?apiKey=` query param (query param needed for EventSource, which can't set headers). Configured via `API_KEY` env var.
+**Authentication**: `X-API-Key` header or `?apiKey=` query param (query param needed for EventSource, which can't set headers). Configured via `api.apiKey` in `config/local.yaml`.
 
 **Service layer** — three singletons injected into request context via `request.services`:
 

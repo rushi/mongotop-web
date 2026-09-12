@@ -1,4 +1,4 @@
-# MongoDB Query Top - API Documentation
+# MongoTop API
 
 Complete API reference for the mongotop-web REST API server.
 

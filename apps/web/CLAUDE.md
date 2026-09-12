@@ -30,7 +30,7 @@ Lands in `src/components/ui/`. Import from there directly (no barrel imports fro
 
 ## API Client
 
-Centralized in `src/utils/api.ts` — Axios with base URL from `VITE_API_URL`. Always add new API calls there. The response interceptor normalizes API errors with `parseError()` and re-throws a structured `createEvlogError` (keeps `.message`, adds `.why`/`.fix`).
+Centralized in `src/utils/api.ts` — Axios with base URL from `config.apiUrl` (generated `src/config.ts`, see root `CLAUDE.md` Configuration System). Always add new API calls there. The response interceptor normalizes API errors with `parseError()` and re-throws a structured `createEvlogError` (keeps `.message`, adds `.why`/`.fix`).
 
 ## Logging (evlog only)
 
