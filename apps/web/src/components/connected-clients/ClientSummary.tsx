@@ -1,4 +1,4 @@
-import type { ClientSummary as ClientSummaryType } from "@mongo-query-top/types";
+import type { ClientSummary as ClientSummaryType } from "@mongotop-web/types";
 import { cn } from "../../lib/utils";
 
 interface BreakdownListProps {

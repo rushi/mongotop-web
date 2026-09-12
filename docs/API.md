@@ -1,6 +1,6 @@
 # MongoDB Query Top - API Documentation
 
-Complete API reference for the mongo-query-top REST API server.
+Complete API reference for the mongotop-web REST API server.
 
 ## Base URL
 
@@ -736,7 +736,7 @@ A TypeScript API client is available in the web app:
 You can extract and reuse this client in your own applications:
 
 ```typescript
-import { apiClient } from "@mongo-query-top/web/utils/api";
+import { apiClient } from "@mongotop-web/web/utils/api";
 
 // Already configured with base URL and API key from env vars
 const { data } = await apiClient.get("/api/servers");
@@ -774,7 +774,7 @@ Start the API server in development mode:
 pnpm run dev:api
 
 # Or with Turborepo
-turbo dev --filter=@mongo-query-top/api
+turbo dev --filter=@mongotop-web/api
 ```
 
 API server will restart automatically on file changes.

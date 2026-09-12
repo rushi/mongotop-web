@@ -1,4 +1,4 @@
-import type { MongoQuery } from "@mongo-query-top/types";
+import type { MongoQuery } from "@mongotop-web/types";
 import { describe, expect, it } from "vitest";
 import { formatUserAgent, shouldSkipConnection, shouldSkipQuery } from "./queryProcessor.js";
 

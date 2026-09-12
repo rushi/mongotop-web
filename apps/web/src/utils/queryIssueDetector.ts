@@ -1,4 +1,4 @@
-import type { ProcessedQuery } from "@mongo-query-top/types";
+import type { ProcessedQuery } from "@mongotop-web/types";
 
 /**
  * Severity levels for query issues

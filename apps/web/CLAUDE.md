@@ -34,7 +34,7 @@ Centralized in `src/utils/api.ts` — Axios with base URL from `VITE_API_URL`. A
 
 ## Logging (evlog only)
 
-evlog is the only logger — **never** `console.log`/`console.error`. The `evlog/vite` plugin (service `mongo-query-top-web`, console-only) auto-inits the browser logger and strips `log.debug()` from prod builds.
+evlog is the only logger — **never** `console.log`/`console.error`. The `evlog/vite` plugin (service `mongotop-web-web`, console-only) auto-inits the browser logger and strips `log.debug()` from prod builds.
 
 - Import explicitly from `evlog`: `import { log, parseError, createEvlogError } from "evlog"`.
 - Emit structured wide events: `log.info({ connection: { event: "established", url } })`, `log.error({ action: "save_query", error: msg })` — grouped objects, not strings. Pick the level by intent (`debug` for high-frequency/noise so it's stripped in prod).

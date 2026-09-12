@@ -24,10 +24,10 @@ COPY . .
 RUN rm -f packages/types/*.tsbuildinfo apps/api/*.tsbuildinfo
 
 # Build types package first
-RUN pnpm --filter=@mongo-query-top/types run build
+RUN pnpm --filter=@mongotop-web/types run build
 
 # Build API (now it can find the types)
-RUN pnpm --filter=@mongo-query-top/api run build
+RUN pnpm --filter=@mongotop-web/api run build
 
 # Runner stage - production runtime
 FROM node:24-alpine AS runner

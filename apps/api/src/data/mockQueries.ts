@@ -1,4 +1,4 @@
-import type { MongoQuery } from "@mongo-query-top/types";
+import type { MongoQuery } from "@mongotop-web/types";
 
 /**
  * Mock MongoDB queries for UI testing

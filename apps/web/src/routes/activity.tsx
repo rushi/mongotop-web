@@ -1,4 +1,4 @@
-import type { ReadPreferenceMode } from "@mongo-query-top/types";
+import type { ReadPreferenceMode } from "@mongotop-web/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSetState, useTitle } from "ahooks";
 import { useEffect, useState } from "react";

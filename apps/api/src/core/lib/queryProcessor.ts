@@ -1,4 +1,4 @@
-import type { MongoQuery } from "@mongo-query-top/types";
+import type { MongoQuery } from "@mongotop-web/types";
 import { omit } from "lodash-es";
 import { beautifyJson } from "./helpers.js";
 

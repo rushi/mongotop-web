@@ -1,4 +1,4 @@
-import type { TopCommandResult, TopMetric, TopNamespaceStats } from "@mongo-query-top/types";
+import type { TopCommandResult, TopMetric, TopNamespaceStats } from "@mongotop-web/types";
 import dayjs from "dayjs";
 
 const NAMESPACES = ["shop.orders", "shop.products", "shop.customers", "analytics.events", "admin.system.users"];

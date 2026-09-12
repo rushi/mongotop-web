@@ -1,5 +1,5 @@
 {
-  "name": "@mongo-query-top/web",
+  "name": "@mongotop-web/web",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
   "dependencies": {
     "@microlink/react-json-view": "^1.31.22",
     "@microsoft/fetch-event-source": "^2.0.1",
-    "@mongo-query-top/types": "workspace:*",
+    "@mongotop-web/types": "workspace:*",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-dialog": "^1.1.18",
     "@radix-ui/react-label": "^2.1.11",

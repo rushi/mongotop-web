@@ -32,7 +32,7 @@ RUN if [ -n "$API_URL" ]; then \
         NODE_ENV=production node scripts/generate-web-config.js; \
     fi
 
-RUN pnpm run build --filter=@mongo-query-top/web
+RUN pnpm run build --filter=@mongotop-web/web
 
 # Runner stage - serve with nginx
 FROM nginx:alpine AS runner

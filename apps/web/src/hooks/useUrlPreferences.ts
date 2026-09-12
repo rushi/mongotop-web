@@ -1,4 +1,4 @@
-import type { ActivityMode, ReadPreferenceMode } from "@mongo-query-top/types";
+import type { ActivityMode, ReadPreferenceMode } from "@mongotop-web/types";
 import { useMemoizedFn } from "ahooks";
 import { parseAsBoolean, parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import { useSettings } from "../store/settings";

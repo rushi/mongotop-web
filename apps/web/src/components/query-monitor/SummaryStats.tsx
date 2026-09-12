@@ -1,4 +1,4 @@
-import type { QuerySummary } from "@mongo-query-top/types";
+import type { QuerySummary } from "@mongotop-web/types";
 import { cn } from "../../lib/utils";
 
 interface SummaryStatsProps {

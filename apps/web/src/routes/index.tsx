@@ -1,4 +1,4 @@
-import type { ProcessedQuery, QuerySummary, ReadPreferenceMode } from "@mongo-query-top/types";
+import type { ProcessedQuery, QuerySummary, ReadPreferenceMode } from "@mongotop-web/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useBoolean, useSetState, useTitle } from "ahooks";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";

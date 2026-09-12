@@ -1,4 +1,4 @@
-import type { ActivityMetric, ActivityMode, TopNode } from "@mongo-query-top/types";
+import type { ActivityMetric, ActivityMode, TopNode } from "@mongotop-web/types";
 import dayjs from "dayjs";
 
 const MS_PER_SECOND = 1_000;

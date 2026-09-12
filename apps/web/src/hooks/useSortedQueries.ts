@@ -1,4 +1,4 @@
-import type { ProcessedQuery } from "@mongo-query-top/types";
+import type { ProcessedQuery } from "@mongotop-web/types";
 import { useMemo } from "react";
 import type { SortColumn, SortDirection } from "./useUrlPreferences";
 

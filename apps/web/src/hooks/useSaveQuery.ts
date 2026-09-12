@@ -1,4 +1,4 @@
-import type { ProcessedQuery } from "@mongo-query-top/types";
+import type { ProcessedQuery } from "@mongotop-web/types";
 import { useUnmount } from "ahooks";
 import { log } from "evlog";
 import { useCallback, useRef, useState } from "react";

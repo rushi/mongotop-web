@@ -1,4 +1,4 @@
-import type { TopCommandResult, TopMetric } from "@mongo-query-top/types";
+import type { TopCommandResult, TopMetric } from "@mongotop-web/types";
 import { describe, expect, it } from "vitest";
 import { buildCollectionActivity, isSystemNamespace } from "./topProcessor.js";
 

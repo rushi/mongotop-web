@@ -1,4 +1,4 @@
-import type { MongoQuery } from "@mongo-query-top/types";
+import type { MongoQuery } from "@mongotop-web/types";
 import { log } from "evlog";
 import type { FastifyInstance } from "fastify";
 import type { MongoClient } from "mongodb";

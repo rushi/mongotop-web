@@ -1,4 +1,4 @@
-import type { ProcessedQuery } from "@mongo-query-top/types";
+import type { ProcessedQuery } from "@mongotop-web/types";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCallback, useRef } from "react";
 import { useSaveQuery } from "../../hooks/useSaveQuery";

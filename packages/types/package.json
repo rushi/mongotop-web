@@ -1,5 +1,5 @@
 {
-    "name": "@mongo-query-top/types",
+    "name": "@mongotop-web/types",
     "version": "0.0.0",
     "private": true,
     "type": "module",

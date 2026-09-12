@@ -1,5 +1,5 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import type { QueryData, ReadPreferenceMode } from "@mongo-query-top/types";
+import type { QueryData, ReadPreferenceMode } from "@mongotop-web/types";
 import { useDocumentVisibility, useInterval } from "ahooks";
 import { createEvlogError, log } from "evlog";
 import { useEffect, useRef, useState } from "react";

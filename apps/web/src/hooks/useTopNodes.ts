@@ -1,4 +1,4 @@
-import type { TopNode } from "@mongo-query-top/types";
+import type { TopNode } from "@mongotop-web/types";
 import { useEffect, useState } from "react";
 import { apiClient } from "../utils/api";
 

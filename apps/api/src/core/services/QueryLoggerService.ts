@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import type { ProcessedQuery } from "@mongo-query-top/types";
+import type { ProcessedQuery } from "@mongotop-web/types";
 import dayjs from "dayjs";
 
 export class QueryLoggerService {

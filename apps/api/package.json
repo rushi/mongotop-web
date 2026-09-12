@@ -1,5 +1,5 @@
 {
-    "name": "@mongo-query-top/api",
+    "name": "@mongotop-web/api",
     "version": "0.0.0",
     "private": true,
     "type": "module",
@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@fastify/cors": "^11.2.0",
-        "@mongo-query-top/types": "workspace:*",
+        "@mongotop-web/types": "workspace:*",
         "config": "^4.4.2",
         "dayjs": "^1.11.21",
         "evlog": "^2.20.0",

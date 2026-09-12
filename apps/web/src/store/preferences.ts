@@ -1,4 +1,4 @@
-import type { ReadPreferenceMode } from "@mongo-query-top/types";
+import type { ReadPreferenceMode } from "@mongotop-web/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -33,7 +33,7 @@ export const usePreferences = create<PreferencesState>()(
             resetFilters: () => set({ isPaused: false, ipFilter: undefined }),
         }),
         {
-            name: "mongo-query-top-preferences",
+            name: "mongotop-web-preferences",
         },
     ),
 );

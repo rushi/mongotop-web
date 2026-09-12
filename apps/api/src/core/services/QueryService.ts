@@ -5,7 +5,7 @@ import type {
     MongoQuery,
     ProcessedQuery,
     QuerySummary,
-} from "@mongo-query-top/types";
+} from "@mongotop-web/types";
 import { useLogger } from "evlog/fastify";
 import geoip from "geoip-lite";
 import shortHumanizeTime from "../lib/helpers.js";

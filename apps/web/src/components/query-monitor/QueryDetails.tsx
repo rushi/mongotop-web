@@ -1,5 +1,5 @@
 import JsonView from "@microlink/react-json-view";
-import type { ProcessedQuery } from "@mongo-query-top/types";
+import type { ProcessedQuery } from "@mongotop-web/types";
 import { CheckIcon, CopyIcon, FloppyDiskIcon, ProhibitIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTimeout } from "ahooks";
 import { log } from "evlog";

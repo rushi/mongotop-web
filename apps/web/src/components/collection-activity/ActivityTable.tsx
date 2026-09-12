@@ -1,4 +1,4 @@
-import type { ActivityMode, CollectionActivity } from "@mongo-query-top/types";
+import type { ActivityMode, CollectionActivity } from "@mongotop-web/types";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useMemo, useRef, useState } from "react";
 import { avgLatencyMicros, metricTime } from "../../lib/formatActivity";

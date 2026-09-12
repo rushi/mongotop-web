@@ -21,7 +21,7 @@ const config = defineConfig({
         // that the browser can't resolve in dev, and it's redundant — the bundled logger already
         // self-initializes from the define above.
         ...evlog({
-            service: "mongo-query-top-web",
+            service: "mongotop-web-web",
             strip: ["debug"],
             sourceLocation: "dev",
         }),

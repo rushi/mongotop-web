@@ -1,4 +1,4 @@
-import type { ReadPreferenceMode } from "@mongo-query-top/types";
+import type { ReadPreferenceMode } from "@mongotop-web/types";
 
 const VALID_MODES: ReadPreferenceMode[] = ["primary", "secondaryPreferred"];
 

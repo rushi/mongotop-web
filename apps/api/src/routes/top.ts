@@ -1,4 +1,4 @@
-import type { CollectionActivity, TopCommandResult, TopNode } from "@mongo-query-top/types";
+import type { CollectionActivity, TopCommandResult, TopNode } from "@mongotop-web/types";
 import dayjs from "dayjs";
 import { log } from "evlog";
 import type { FastifyInstance } from "fastify";

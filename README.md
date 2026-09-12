@@ -217,7 +217,7 @@ pnpm run dev        # All apps
 pnpm run build
 
 # Build specific package
-turbo build --filter=@mongo-query-top/api
+turbo build --filter=@mongotop-web/api
 
 # Format code
 pnpm run format

@@ -1,5 +1,5 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import type { ReadPreferenceMode, TopData } from "@mongo-query-top/types";
+import type { ReadPreferenceMode, TopData } from "@mongotop-web/types";
 import { createEvlogError } from "evlog";
 import { useEffect, useRef, useState } from "react";
 import { API_BASE, API_KEY } from "../utils/api";

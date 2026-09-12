@@ -23,7 +23,7 @@ declare module "fastify" {
 }
 
 // Initialize evlog before Fastify so wide events carry the service name.
-initLogger({ env: { service: "mongo-query-top-api" } });
+initLogger({ env: { service: "mongotop-web-api" } });
 
 // evlog is the only logger — Fastify's pino is disabled. The evlog plugin emits one wide
 // event per request via request.log; the global `log` (evlog) handles standalone events

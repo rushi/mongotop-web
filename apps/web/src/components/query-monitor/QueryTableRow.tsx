@@ -1,4 +1,4 @@
-import type { ProcessedQuery } from "@mongo-query-top/types";
+import type { ProcessedQuery } from "@mongotop-web/types";
 import { CheckIcon, EyeIcon, FloppyDiskIcon, FunnelIcon } from "@phosphor-icons/react/dist/ssr";
 import { memo } from "react";
 import type { CSSProperties } from "react";

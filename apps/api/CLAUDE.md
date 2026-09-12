@@ -61,4 +61,4 @@ Fastify's pino logger is **disabled** (`logger: false` in `server.ts`). evlog is
 - **Per request:** enrich the wide event with `request.log.set({ user: { id } })`, or `useLogger()` from `evlog/fastify` inside services (no need to thread `request` through).
 - **Standalone events** (startup/shutdown, SSE lifecycle, auto-save, idle disconnect): global `log` from `evlog` — `log.info({ ... })` / `log.warn({ ... })` / `log.error({ ... })`, always a grouped object, never a string.
 - **Errors:** `throw createError({ message, status, why, fix })` from `evlog`; the `setErrorHandler` in `server.ts` turns it into a structured JSON response via `parseError()`.
-- Service name (`mongo-query-top-api`) is set once via `initLogger()` in `server.ts`.
+- Service name (`mongotop-web-api`) is set once via `initLogger()` in `server.ts`.

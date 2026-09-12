@@ -1,4 +1,4 @@
-import type { ActivityMetric, ActivityMode, CollectionActivity } from "@mongo-query-top/types";
+import type { ActivityMetric, ActivityMode, CollectionActivity } from "@mongotop-web/types";
 import { memo } from "react";
 import { avgLatencyMicros, formatCount, formatMicros, metricCount, metricTime } from "../../lib/formatActivity";
 import { cn } from "../../lib/utils";

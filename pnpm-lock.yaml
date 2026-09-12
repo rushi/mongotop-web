@@ -75,7 +75,7 @@ importers:
       '@fastify/cors':
         specifier: ^11.2.0
         version: 11.2.0
-      '@mongo-query-top/types':
+      '@mongotop-web/types':
         specifier: workspace:*
         version: link:../../packages/types
       config:
@@ -139,7 +139,7 @@ importers:
       '@microsoft/fetch-event-source':
         specifier: ^2.0.1
         version: 2.0.1
-      '@mongo-query-top/types':
+      '@mongotop-web/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@phosphor-icons/react':

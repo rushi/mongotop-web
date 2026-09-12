@@ -1,4 +1,4 @@
-import type { ConnectedClient } from "@mongo-query-top/types";
+import type { ConnectedClient } from "@mongotop-web/types";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useMemo, useRef, useState } from "react";
 import { cn } from "../../lib/utils";

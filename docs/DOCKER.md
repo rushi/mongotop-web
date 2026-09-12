@@ -88,17 +88,17 @@ docker compose down
 **Build API only:**
 
 ```bash
-docker build -t mongo-query-top-api -f apps/api/Dockerfile .
+docker build -t mongotop-web-api -f apps/api/Dockerfile .
 ```
 
 **Build Web only:**
 
 ```bash
 # With default config
-docker build -t mongo-query-top-web -f apps/web/Dockerfile .
+docker build -t mongotop-web-web -f apps/web/Dockerfile .
 
 # With custom API URL
-docker build -t mongo-query-top-web -f apps/web/Dockerfile \
+docker build -t mongotop-web-web -f apps/web/Dockerfile \
   --build-arg API_URL=https://api.yourdomain.com \
   .
 ```
@@ -423,7 +423,7 @@ To customize, edit `apps/web/nginx.conf` and rebuild.
 docker compose ps
 
 # View resource usage
-docker stats mongo-query-top-api mongo-query-top-web
+docker stats mongotop-web-api mongotop-web-web
 
 # Check logs
 docker compose logs -f --tail=100
@@ -448,17 +448,17 @@ curl -H "X-API-Key: your-key" http://localhost:7011/api/servers
 
 ```bash
 # Backup config files
-tar -czf mongo-query-top-config.tar.gz config/
+tar -czf mongotop-web-config.tar.gz config/
 
 # Backup logs
-tar -czf mongo-query-top-logs.tar.gz logs/
+tar -czf mongotop-web-logs.tar.gz logs/
 ```
 
 ### Restore Configuration
 
 ```bash
 # Restore config
-tar -xzf mongo-query-top-config.tar.gz
+tar -xzf mongotop-web-config.tar.gz
 
 # Rebuild with restored config
 ./docker-build.sh
@@ -488,7 +488,7 @@ docker image prune
 docker compose down
 
 # Remove images
-docker rmi mongo-query-top-api mongo-query-top-web
+docker rmi mongotop-web-api mongotop-web-web
 
 # Remove volumes (if any)
 docker volume prune

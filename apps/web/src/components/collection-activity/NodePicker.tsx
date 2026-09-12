@@ -1,4 +1,4 @@
-import type { TopNode } from "@mongo-query-top/types";
+import type { TopNode } from "@mongotop-web/types";
 import { memo } from "react";
 import { getNodeRole } from "../../lib/formatActivity";
 import { cn } from "../../lib/utils";

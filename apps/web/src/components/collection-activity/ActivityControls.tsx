@@ -1,4 +1,4 @@
-import type { ActivityMode } from "@mongo-query-top/types";
+import type { ActivityMode } from "@mongotop-web/types";
 import { InfoIcon, PauseIcon, PlayIcon } from "@phosphor-icons/react";
 import { formatUptime } from "../../lib/formatActivity";
 import { Button } from "../ui/button";

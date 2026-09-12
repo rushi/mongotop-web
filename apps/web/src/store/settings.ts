@@ -123,7 +123,7 @@ export const useSettings = create<SettingsState>()(
             resetToDefaults: () => set(DEFAULT_STATE),
         }),
         {
-            name: "mongo-query-top-settings",
+            name: "mongotop-web-settings",
             onRehydrateStorage: () => onSettingsRehydrated,
         },
     ),

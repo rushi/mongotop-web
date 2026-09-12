@@ -4,7 +4,7 @@ import type {
     TopCommandResult,
     TopMetric,
     TopNamespaceStats,
-} from "@mongo-query-top/types";
+} from "@mongotop-web/types";
 
 const SYSTEM_DB_PATTERN = /^(admin|config|local)\./;
 

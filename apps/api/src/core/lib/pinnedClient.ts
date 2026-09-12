@@ -1,4 +1,4 @@
-import type { ServerConfig } from "@mongo-query-top/types";
+import type { ServerConfig } from "@mongotop-web/types";
 import config from "config";
 import { log } from "evlog";
 import { MongoClient } from "mongodb";

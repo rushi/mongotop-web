@@ -1,4 +1,4 @@
-import type { MongoQuery, ProcessedQuery } from "@mongo-query-top/types";
+import type { MongoQuery, ProcessedQuery } from "@mongotop-web/types";
 import { log } from "evlog";
 import type { FastifyInstance } from "fastify";
 import { parseReadPreference } from "../core/lib/readPreference.js";
