@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "tsc --build",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
         "dev": "NODE_CONFIG_DIR=../../config tsx watch src/server.ts",
         "start": "NODE_CONFIG_DIR=../../config NODE_ENV=production node dist/server.js",
         "lint": "eslint \"src/**/*.ts\" --config ../../eslint.config.js",

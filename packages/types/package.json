@@ -13,6 +13,7 @@
     },
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
         "dev": "tsc -p tsconfig.build.json --watch",
         "lint": "eslint \"src/**/*.ts\" --config ../../eslint.config.js"
     },

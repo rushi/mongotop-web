@@ -14,7 +14,16 @@ export interface QueryIssue {
     icon: string;
 }
 
-export const DEFAULT_THRESHOLDS = {
+export interface ThresholdsConfig {
+    LONG_RUNNING_WARNING_SECS: number;
+    LONG_RUNNING_CRITICAL_SECS: number;
+    DOCS_EXAMINED_RATIO_WARNING: number;
+    LARGE_RESULT_SET_WARNING: number;
+    HIGH_MEMORY_WARNING_BYTES: number;
+    TIMEOUT_RISK_SECS: number;
+}
+
+export const DEFAULT_THRESHOLDS: ThresholdsConfig = {
     LONG_RUNNING_WARNING_SECS: 30,
     LONG_RUNNING_CRITICAL_SECS: 60,
     DOCS_EXAMINED_RATIO_WARNING: 10,
@@ -22,9 +31,31 @@ export const DEFAULT_THRESHOLDS = {
     HIGH_MEMORY_WARNING_BYTES: 100 * 1024 * 1024, // 100MB
     /** MongoDB's default socket/cursor timeout is around 5 minutes (300s). */
     TIMEOUT_RISK_SECS: 300,
-} as const;
+};
 
-export type ThresholdsConfig = typeof DEFAULT_THRESHOLDS;
+// currentOp returns an untyped document, so name the plan fields this module reads.
+interface ExecutionStats {
+    memUsage?: number;
+    memoryUsageBytes?: number;
+    nReturned?: number;
+    totalDocsExamined?: number;
+    docsExamined?: number;
+    hasSortStage?: boolean;
+    usedDisk?: boolean;
+    retryCount?: number;
+}
+
+interface QueryDocument {
+    executionStats?: ExecutionStats;
+    retryCount?: number;
+    command?: {
+        executionStats?: ExecutionStats;
+        limit?: number;
+        projection?: Record<string, unknown>;
+    };
+}
+
+const queryDocument = (query: ProcessedQuery): QueryDocument => query.query as QueryDocument;
 
 export function convertSettingsToThresholds(settings: {
     longRunningWarningSecs: number;
@@ -87,7 +118,7 @@ export function detectLongRunning(query: ProcessedQuery, thresholds = DEFAULT_TH
  * @returns QueryIssue if detected, null otherwise
  */
 export function detectHighMemoryUsage(query: ProcessedQuery, thresholds = DEFAULT_THRESHOLDS): QueryIssue | null {
-    const executionStats = query.query?.executionStats ?? query.query?.command?.executionStats;
+    const executionStats = queryDocument(query).executionStats ?? queryDocument(query).command?.executionStats;
     const memUsage = executionStats?.memUsage ?? executionStats?.memoryUsageBytes;
 
     if (memUsage && memUsage > thresholds.HIGH_MEMORY_WARNING_BYTES) {
@@ -113,9 +144,9 @@ export function detectHighMemoryUsage(query: ProcessedQuery, thresholds = DEFAUL
  * @returns QueryIssue if detected, null otherwise
  */
 export function detectLargeResultSet(query: ProcessedQuery, thresholds = DEFAULT_THRESHOLDS): QueryIssue | null {
-    const executionStats = query.query?.executionStats ?? query.query?.command?.executionStats;
+    const executionStats = queryDocument(query).executionStats ?? queryDocument(query).command?.executionStats;
     const nReturned = executionStats?.nReturned;
-    const limit = query.query?.command?.limit;
+    const limit = queryDocument(query).command?.limit;
 
     if (limit && limit > thresholds.LARGE_RESULT_SET_WARNING) {
         return {
@@ -150,7 +181,7 @@ export function detectLargeResultSet(query: ProcessedQuery, thresholds = DEFAULT
  * @returns QueryIssue if detected, null otherwise
  */
 export function detectExcessiveDocsExamined(query: ProcessedQuery, thresholds = DEFAULT_THRESHOLDS): QueryIssue | null {
-    const executionStats = query.query?.executionStats ?? query.query?.command?.executionStats;
+    const executionStats = queryDocument(query).executionStats ?? queryDocument(query).command?.executionStats;
     const totalDocsExamined = executionStats?.totalDocsExamined ?? executionStats?.docsExamined;
     const nReturned = executionStats?.nReturned;
 
@@ -180,7 +211,7 @@ export function detectExcessiveDocsExamined(query: ProcessedQuery, thresholds = 
  * @returns QueryIssue if detected, null otherwise
  */
 export function detectMissingProjection(query: ProcessedQuery): QueryIssue | null {
-    const command = query.query?.command;
+    const command = queryDocument(query).command;
     const operation = query.operation?.toLowerCase();
 
     if (operation !== "query" && operation !== "find") {
@@ -213,7 +244,7 @@ export function detectMissingProjection(query: ProcessedQuery): QueryIssue | nul
  */
 export function detectInMemorySort(query: ProcessedQuery): QueryIssue | null {
     const planSummary = query.planSummary ?? "";
-    const executionStats = query.query?.executionStats;
+    const executionStats = queryDocument(query).executionStats;
 
     const hasSortInPlan = planSummary.includes("SORT");
     const hasSortStage = executionStats?.hasSortStage === true;
@@ -289,8 +320,8 @@ export function detectBlockingWrite(query: ProcessedQuery): QueryIssue | null {
  * @returns QueryIssue if detected, null otherwise
  */
 export function detectRetryIndicator(query: ProcessedQuery): QueryIssue | null {
-    const executionStats = query.query?.executionStats;
-    const retryCount = executionStats?.retryCount ?? query.query?.retryCount;
+    const executionStats = queryDocument(query).executionStats;
+    const retryCount = executionStats?.retryCount ?? queryDocument(query).retryCount;
 
     if (retryCount && retryCount > 0) {
         return {

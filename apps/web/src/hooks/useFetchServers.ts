@@ -10,8 +10,8 @@ export interface ServerInfo {
 export const useFetchServers = () => {
     const { data, loading, error } = useRequest(
         async () => {
-            const response = await apiClient.get("/servers");
-            return response.servers as ServerInfo[];
+            const response = await apiClient.get<{ servers: ServerInfo[] }>("/servers");
+            return response.servers;
         },
         {
             cacheKey: "servers-list",

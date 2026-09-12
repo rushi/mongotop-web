@@ -3,18 +3,32 @@
     "ui": "tui",
     "tasks": {
         "build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**", ".output/**"]
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                "dist/**",
+                ".output/**"
+            ]
         },
         "dev": {
-            "dependsOn": ["^build"],
+            "dependsOn": [
+                "^build"
+            ],
             "cache": false,
             "persistent": true
         },
         "lint": {},
         "format": {},
         "test": {
-            "dependsOn": ["^build"]
+            "dependsOn": [
+                "^build"
+            ]
+        },
+        "typecheck": {
+            "dependsOn": [
+                "^build"
+            ]
         }
     }
 }

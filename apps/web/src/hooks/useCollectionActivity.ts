@@ -72,7 +72,7 @@ export const useCollectionActivity = (
                         if (response.ok) {
                             setIsConnected(true);
                             setIsReconnecting(false);
-                            setError(null);
+                            setError(undefined);
                             retryDelayRef.current = INITIAL_RETRY_DELAY_MS;
                         } else {
                             throw createEvlogError({
@@ -102,7 +102,7 @@ export const useCollectionActivity = (
                                 }
                             }
                             setData(parsed);
-                            setError(null);
+                            setError(undefined);
                         } catch {
                             setError("Failed to parse activity data");
                         }
