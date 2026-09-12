@@ -1,0 +1,141 @@
+import type { MongoQuery } from "@mongotop-web/types";
+
+// Raw $currentOp connection documents, the shape QueryService.processClients expects.
+// Covers active and idle connections, internal and public IPs, and two monitoring
+// agents that shouldSkipConnection filters out unless showAll is set.
+const MOCK_CONNECTIONS: MongoQuery[] = [
+    {
+        opid: 1561305353,
+        connectionId: 8421,
+        active: true,
+        appName: "orders-api",
+        effectiveUsers: [{ user: "app_user", db: "admin" }],
+        secs_running: 914,
+        microsecs_running: 914_000_000,
+        op: "command",
+        ns: "production.order_items",
+        command: { aggregate: "order_items", cursor: { batchSize: 100 } },
+        client: "10.0.1.55:60001",
+        clientMetadata: { driver: { name: "nodejs", version: "6.10.0" } },
+    },
+    {
+        opid: 1474154483,
+        connectionId: 8395,
+        active: true,
+        appName: "NoSQLBoosterV9.1.6_53731.656",
+        effectiveUsers: [{ user: "readonly_user", db: "admin" }],
+        secs_running: 649,
+        microsecs_running: 649_000_000,
+        op: "query",
+        ns: "production.orders",
+        command: { find: "orders", filter: { status: "pending" } },
+        client: "203.0.113.42:51122",
+        clientMetadata: { driver: { name: "nodejs", version: "6.9.0" } },
+    },
+    {
+        opid: 1561300011,
+        connectionId: 8377,
+        active: true,
+        effectiveUsers: [{ user: "reporting", db: "admin" }],
+        secs_running: 12,
+        microsecs_running: 12_000_000,
+        op: "getmore",
+        ns: "analytics.events",
+        command: { getMore: 8231118110394, collection: "events" },
+        client: "10.0.2.17:44310",
+        clientMetadata: { driver: { name: "mongo-php-driver", version: "1.19.1" } },
+    },
+    {
+        opid: 1561299001,
+        connectionId: 8302,
+        active: false,
+        appName: "orders-api",
+        effectiveUsers: [{ user: "app_user", db: "admin" }],
+        secs_running: 0,
+        microsecs_running: 0,
+        op: "none",
+        ns: "",
+        command: {},
+        client: "10.0.1.55:60002",
+        clientMetadata: { driver: { name: "nodejs", version: "6.10.0" } },
+    },
+    {
+        opid: 1561299002,
+        connectionId: 8303,
+        active: false,
+        appName: "checkout-worker",
+        effectiveUsers: [{ user: "app_user", db: "admin" }],
+        secs_running: 0,
+        microsecs_running: 0,
+        op: "none",
+        ns: "",
+        command: {},
+        client: "10.0.1.91:58840",
+        clientMetadata: { driver: { name: "mongoose", version: "8.9.2" } },
+    },
+    {
+        opid: 1561299003,
+        connectionId: 8304,
+        active: false,
+        appName: "checkout-worker",
+        effectiveUsers: [{ user: "app_user", db: "admin" }],
+        secs_running: 0,
+        microsecs_running: 0,
+        op: "none",
+        ns: "",
+        command: {},
+        client: "10.0.1.91:58841",
+        clientMetadata: { driver: { name: "mongoose", version: "8.9.2" } },
+    },
+    {
+        opid: 1561298877,
+        connectionId: 8288,
+        active: false,
+        appName: "Compass",
+        effectiveUsers: [{ user: "dba", db: "admin" }],
+        secs_running: 0,
+        microsecs_running: 0,
+        op: "none",
+        ns: "",
+        command: {},
+        client: "198.51.100.7:49320",
+        clientMetadata: { driver: { name: "nodejs", version: "6.8.0" } },
+    },
+    {
+        opid: 1561290011,
+        connectionId: 9001,
+        active: false,
+        appName: "MongoDB Monitoring Module",
+        effectiveUsers: [{ user: "__system", db: "local" }],
+        secs_running: 0,
+        microsecs_running: 0,
+        op: "none",
+        ns: "",
+        command: {},
+        client: "10.0.0.4:38112",
+    },
+    {
+        opid: 1561290012,
+        connectionId: 9002,
+        active: true,
+        appName: "MongoDB Automation Agent",
+        effectiveUsers: [{ user: "__system", db: "local" }],
+        secs_running: 3,
+        microsecs_running: 3_000_000,
+        op: "command",
+        ns: "admin.$cmd",
+        command: { hello: 1 },
+        client: "10.0.0.4:38113",
+    },
+];
+
+// Jitters runtimes so consecutive SSE frames differ, the way a live server looks.
+export const nextMockClients = (): MongoQuery[] =>
+    MOCK_CONNECTIONS.map((connection) => {
+        if (!connection.active) {
+            return { ...connection };
+        }
+
+        const secs = connection.secs_running + Math.floor(Math.random() * 3);
+        return { ...connection, secs_running: secs, microsecs_running: secs * 1_000_000 };
+    });

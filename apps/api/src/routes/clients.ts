@@ -5,6 +5,7 @@ import type { MongoClient } from "mongodb";
 import type { QueryService } from "../core/index.js";
 import { resolveSampleClient } from "../core/lib/pinnedClient.js";
 import { parseReadPreference } from "../core/lib/readPreference.js";
+import { nextMockClients } from "../data/mockClients.js";
 
 // Lists live connections via $currentOp (includes idle connections), so the
 // view reflects who is connected, not just who is running an operation.
@@ -28,6 +29,17 @@ const buildClientsData = async (
     return { clients, summary, metadata: { serverId, timestamp: new Date().toISOString() } };
 };
 
+const buildMockClientsData = (queryService: QueryService, showAll: boolean) => {
+    const clients = queryService.processClients(nextMockClients(), showAll);
+    const summary = queryService.generateClientSummary(clients);
+
+    return {
+        clients,
+        summary,
+        metadata: { serverId: "mock", timestamp: new Date().toISOString(), isMockData: true },
+    };
+};
+
 export default async function clientsRoutes(fastify: FastifyInstance) {
     fastify.get<{
         Params: { serverId: string };
@@ -35,6 +47,10 @@ export default async function clientsRoutes(fastify: FastifyInstance) {
     }>("/:serverId", async (request, reply) => {
         const { serverId } = request.params;
         const { showAll = "false", readPreference } = request.query;
+
+        if (serverId === "mock") {
+            return buildMockClientsData(request.services.queryService, showAll === "true");
+        }
 
         const client = request.services.mongoService.getConnection(serverId);
         if (!client) {
@@ -66,9 +82,10 @@ export default async function clientsRoutes(fastify: FastifyInstance) {
 
         const { serverId } = request.params;
         const { refreshInterval = "2", showAll = "false", readPreference, node } = request.query;
+        const isMock = serverId === "mock";
 
         const client = request.services.mongoService.getConnection(serverId);
-        if (!client) {
+        if (!isMock && !client) {
             reply.raw.writeHead(404, {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": request.headers.origin ?? "*",
@@ -90,7 +107,9 @@ export default async function clientsRoutes(fastify: FastifyInstance) {
         // Pin sampling to the requested node so we report clients on that specific
         // member. When pinned, read directly from it (secondaryPreferred lets a
         // secondary accept the read); otherwise honor the requested preference.
-        const { client: sampleClient, pinned } = await resolveSampleClient(client, serverId, node);
+        const { client: sampleClient, pinned } = isMock
+            ? { client, pinned: false }
+            : await resolveSampleClient(client!, serverId, node);
         const effectiveReadPreference = pinned ? "secondaryPreferred" : readPreference;
 
         let isActive = true;
@@ -101,13 +120,15 @@ export default async function clientsRoutes(fastify: FastifyInstance) {
             }
 
             try {
-                const data = await buildClientsData(
-                    sampleClient,
-                    request.services.queryService,
-                    serverId,
-                    showAll === "true",
-                    effectiveReadPreference,
-                );
+                const data = isMock
+                    ? buildMockClientsData(request.services.queryService, showAll === "true")
+                    : await buildClientsData(
+                          sampleClient!,
+                          request.services.queryService,
+                          serverId,
+                          showAll === "true",
+                          effectiveReadPreference,
+                      );
                 reply.raw.write(`event: clients\ndata: ${JSON.stringify(data)}\n\n`);
             } catch (err) {
                 if (isActive) {
