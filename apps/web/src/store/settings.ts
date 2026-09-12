@@ -123,7 +123,9 @@ export const useSettings = create<SettingsState>()(
             resetToDefaults: () => set(DEFAULT_STATE),
         }),
         {
-            name: "mongotop-web-settings",
+            // localStorage key, not an identifier. Renaming it strands every existing user's saved
+            // state, so it keeps the pre-mongotop-web name.
+            name: "mongo-query-top-settings",
             onRehydrateStorage: () => onSettingsRehydrated,
         },
     ),

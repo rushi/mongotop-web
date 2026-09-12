@@ -17,7 +17,7 @@ export class MongoConnectionService {
         }
 
         const client = new MongoClient(uri, {
-            appName: "Mongo Query Top",
+            appName: "MongoTop",
             // Prevent BSON Long from auto-converting to Number to avoid overflow
             promoteLongs: false,
             promoteValues: true,
